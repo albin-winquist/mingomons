@@ -52,7 +52,7 @@ public class Movement : MonoBehaviour
 
         while (dodgeTimer < dodgeTime)
         {
-            Vector3 rollDirection = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0f).normalized;
+            Vector2 rollDirection = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized;
             transform.Translate(rollDirection * dodgeSpeed * Time.deltaTime);
             dodgeTimer += Time.deltaTime;
             yield return null;
