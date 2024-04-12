@@ -8,10 +8,11 @@ public class Movement : MonoBehaviour
 {
     [SerializeField] float speed = 5;
     public Rigidbody2D rb;
+   
     [SerializeField] float dodgeSpeed = 10;
     [SerializeField] float dodgeTime = 0.5f;
     [SerializeField] float dodgeCd = 2;
-
+    public bool isRailGunning;
     private bool CanDodge = true;
     private bool IsDodging = false; 
  
@@ -38,12 +39,25 @@ public class Movement : MonoBehaviour
         }
 
 
-
+        
         Vector2 movement = new Vector2(moveX, moveY);
-        rb.velocity = movement * speed;
-    }
+        if(!isRailGunning)
+        {
+            rb.velocity = movement * speed;
+        }
+        else
+        {
+            rb.velocity = new Vector2(0, 0);
+        }
 
-    IEnumerator Dodge()
+
+    }
+    public void  isRailing(bool isTrue)
+    {
+        isRailGunning = isTrue;
+    }
+   
+        IEnumerator Dodge()
     {
         IsDodging = true;
         CanDodge = false;
