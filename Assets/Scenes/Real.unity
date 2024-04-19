@@ -1289,7 +1289,6 @@ GameObject:
   - component: {fileID: 1694300591}
   - component: {fileID: 1694300592}
   - component: {fileID: 1694300593}
-  - component: {fileID: 1694300594}
   m_Layer: 6
   m_Name: Weapon
   m_TagString: Untagged
@@ -1353,12 +1352,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 5
-  m_Sprite: {fileID: 21300000, guid: 0b0cd7ede6c98314e952df9873bc391b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4732e2290de3a784bbe9d9961a1c0fda, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 4.8, y: 4.8}
+  m_Size: {x: 2, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -1373,7 +1372,7 @@ Rigidbody2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1694300590}
   m_BodyType: 0
-  m_Simulated: 0
+  m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
@@ -1391,20 +1390,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 7
---- !u!114 &1694300594
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1694300590}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e83f7c7ca18bf446a12b7c335338b81, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  aimAngle: 0
-  rb: {fileID: 0}
 --- !u!1 &1726955370
 GameObject:
   m_ObjectHideFlags: 0
