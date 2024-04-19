@@ -2,46 +2,32 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Weapon : MonoBehaviour
+public class RailGunLook : MonoBehaviour
 {
-    public Bullets weapon;
-    public Rigidbody2D rb;
-   
-    public Transform firePoint;
-    public Rigidbody2D parentRB;
+
+    // Start is called before the first frame update
     Vector2 mousePosition;
     public float aimAngle;
-
-    
+    public Rigidbody2D rb;
+    Rigidbody2D parentRB;
     void Start()
     {
-       
+        
+
     }
-
-    // Update is called once per frame
-    public void Update()
+    private void Update()
     {
-
-       
-       
-        if (Input.GetMouseButtonDown(0))
-        {
-            weapon.Fire();
-        }
-      
-
         mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
     }
 
+    // Update is called once per frame
     private void FixedUpdate()
     {
         Vector2 aimDir = mousePosition - rb.position;
         aimAngle = Mathf.Atan2(aimDir.y, aimDir.x) * Mathf.Rad2Deg - 90f;
         rb.rotation = aimAngle;
-        
+       
+
 
     }
-
-
-    
 }
