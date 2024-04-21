@@ -104,11 +104,18 @@ public class Movement : MonoBehaviour
         }
         else
         {
-        //rb.velocity = new Vector2(0, 0);
+        
         }
         if (chargeTimer >= .01f)
         {
-
+            if (isCharging)
+            {
+                speed = 1.5f;
+            }
+            else
+            {
+                speed = 5;
+            }
             if (isCharging && railGunTimer > RAILGUN_CD)
             {
                 chargePower = System.MathF.Pow(chargePower, 1.005f);
