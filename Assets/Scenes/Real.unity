@@ -1833,6 +1833,7 @@ MonoBehaviour:
   firePoint: {fileID: 113180495}
   parentRB: {fileID: 0}
   aimAngle: 0
+  shotInMag: 12
 --- !u!114 &2031633683
 MonoBehaviour:
   m_ObjectHideFlags: 0
