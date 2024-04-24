@@ -176,22 +176,27 @@ public class Movement : MonoBehaviour
 
     IEnumerator Dodge()
     {
-        IsDodging = true;
-        CanDodge = false;
+        //if (GetComponent<StaminaBar>().Stamina > 25)
+        //{
+            IsDodging = true;
+            CanDodge = false;
 
-        float dodgeTimer = 0f;
+            float dodgeTimer = 0f;
 
-        while (dodgeTimer < dodgeTime)
-        {
-            Vector2 rollDirection = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized;
-            transform.Translate(rollDirection * dodgeSpeed * Time.deltaTime);
-            dodgeTimer += Time.deltaTime;
-            yield return null;
-        }
+            while (dodgeTimer < dodgeTime)
+            {
+                Vector2 rollDirection = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized;
+                transform.Translate(rollDirection * dodgeSpeed * Time.deltaTime);
+                dodgeTimer += Time.deltaTime;
+                yield return null;
 
-      IsDodging = false;
 
-        yield return new WaitForSeconds(dodgeCd);
-        CanDodge = true;
+            }
+
+            IsDodging = false;
+
+            yield return new WaitForSeconds(dodgeCd);
+            CanDodge = true;
+        //}
     }
 }

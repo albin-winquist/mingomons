@@ -20,6 +20,7 @@ namespace HealthBar
     // Update is called once per frame
     void Update()
     {
+            Debug.Log(Health);
         if (healthSlider.value != Health)
         {
             healthSlider.value = Health;
@@ -31,7 +32,7 @@ namespace HealthBar
 
         }
 
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.Q) && Health != maxHealth)
             {
                 Heal(20);
             }
