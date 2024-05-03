@@ -9,6 +9,10 @@ TagManager:
   - player
   - hpBar
   - staminaBar
+  - ChargeHealthBar
+  - VirtualCamera
+  - EyePoint
+  - ParticleTag
   layers:
   - Default
   - TransparentFX

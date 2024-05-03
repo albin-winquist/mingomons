@@ -5,17 +5,31 @@ using Unity.VisualScripting;
 using UnityEngine;
 using Cinemachine;
 using UnityEngine.InputSystem;
+using TMPro;
+
 public class Movement : MonoBehaviour
 {
     const int MAX_POWER = 50;
     const int RAILGUN_CD = 3;
-
+    float LENS_SIZE;
+    float START_EMISSION;
+    float START_EM_SPEED;
+    float START_EM_SIZE;
     [SerializeField] float speed = 5;
     public Rigidbody2D rb;
     public Bullets weapon;
     public Transform firePoint;
+    Transform playerTransform;
+    public Transform eyePoint;
+
+    GameObject particleAccelerator;
+    ParticleSystem particleAccel2;
+    float poweredByCharge;
+    float powerSpeed;
 
     GameObject powerBar;
+    GameObject chargeHealthBar;
+    GameObject virtualCamera;
     
     [SerializeField] float dodgeSpeed = 10;
     [SerializeField] float dodgeTime = 0.5f;
@@ -33,14 +47,37 @@ public class Movement : MonoBehaviour
     private float railGunTimer = 0;
     private float waitRGtimer = 0;
 
+    public float healthPower = 2;
+    public bool isHealthPower = false;
+
+    private bool isHealthCharging = false;
+    private bool isRailGunCharging = false;
+
     private WeaponParent weaponParent;
     CinemachineImpulseSource impulseSource;
+    struct ChargeResult
+    {
+        public float power;
+        public float speed;
+    }
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        
+        playerTransform = GetComponent<Transform>();
         weaponParent = GetComponentInChildren<WeaponParent>();
         impulseSource = GetComponent<CinemachineImpulseSource>();
         powerBar = GameObject.FindGameObjectWithTag("PowerBar");
+        chargeHealthBar = GameObject.FindGameObjectWithTag("ChargeHealthBar");
+        virtualCamera = GameObject.FindGameObjectWithTag("VirtualCamera");
+        particleAccelerator = GameObject.FindGameObjectWithTag("ParticleTag");
+
+        LENS_SIZE = virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize;
+        START_EM_SIZE = particleAccelerator.GetComponent<ParticleSystem>().startSize;
+        START_EMISSION = particleAccelerator.GetComponent<ParticleSystem>().emissionRate;
+        START_EM_SPEED = particleAccelerator.GetComponent<ParticleSystem>().startSpeed;
+        particleAccel2 = particleAccelerator.GetComponent<ParticleSystem>();
     }
   
     
@@ -56,6 +93,7 @@ public class Movement : MonoBehaviour
         if(waitRGtimer > 1f)
         {
             stillCharging = false;
+           
             waitRGtimer = 0;
         }
 
@@ -73,18 +111,22 @@ public class Movement : MonoBehaviour
         }
         if(Input.GetKeyDown(KeyCode.X))
         {
-            isCharging = true;
+            isRailGunCharging = true;
             
+            isCharging = true;
+
         }
         if(Input.GetKeyUp(KeyCode.X))
         {
             isCharging = false;
+            
             stillCharging = true;
             if (chargePower > 20 && railGunTimer > RAILGUN_CD)
             {
                 
                 StartCoroutine(Railgun());
                 railGunTimer = 0;
+
                
             }
             else if(chargePower < 20)
@@ -92,62 +134,165 @@ public class Movement : MonoBehaviour
                 stillCharging = false;
             }
         }
+        if(Input.GetKeyDown(KeyCode.R))
+        {
+            isHealthCharging = true;
 
-       
+            isHealthPower = true;
+        }
+        if (Input.GetKeyUp(KeyCode.R))
+        {
+            isHealthPower = false;
 
-         
-        
+            stillCharging = true;
+            if (healthPower > 20 && railGunTimer > RAILGUN_CD)
+            {
+                railGunTimer = 0;
+
+            }
+            else if (healthPower < 20)
+            {
+                stillCharging = false;
+            }
+        }
+
+
         Vector2 movement = new Vector2(moveX, moveY);
         if(!isRailGunning)
         {
             rb.velocity = movement * speed;
         }
-        else
-        {
-        
-        }
+       
+
         if (chargeTimer >= .01f)
         {
-            if (isCharging)
+            ChargeResult result = Charge(isCharging, chargePower, stillCharging, railGunTimer, "railgun");
+            chargePower = result.power;
+
+            if (isCharging || isHealthPower)
             {
-                speed = 1.5f;
+                speed = 0.5f;
             }
             else
             {
                 speed = 5;
             }
-            if (isCharging && railGunTimer > RAILGUN_CD)
+            if ((!isCharging || railGunTimer  <= RAILGUN_CD) && (chargePower <= 2))
             {
-                chargePower = System.MathF.Pow(chargePower, 1.005f);
-                chargePower = chargePower + 0.25f;
-                if (chargePower > MAX_POWER)
-                {
-                    chargePower = MAX_POWER;
-                }
+                isRailGunCharging = false;
+                isHealthCharging = false;
+            }
+
+
+            ChargeResult healthResult = Charge(isHealthPower, healthPower, stillCharging, railGunTimer, "health");
+            healthPower = healthResult.power;
+            if(healthResult.power >= 50)
+            {
+                healthPower = 0;
+            }
+ 
+            if ((!isHealthPower || railGunTimer <= RAILGUN_CD) && (healthPower <= 2))
+            {
+                isRailGunCharging = false;
+                isHealthCharging = false;
+            }
+
+
+
+            chargeTimer = 0;
+        }
+        
+
+        if (!isHealthCharging)
+        {
+            powerBar.transform.localScale = new Vector3((chargePower - 2) / MAX_POWER * 2, powerBar.transform.localScale.y, powerBar.transform.localScale.z);
+        }
+        if (!isRailGunCharging)
+        {
+            chargeHealthBar.transform.localScale = new Vector3((healthPower - 2) / MAX_POWER * 2, chargeHealthBar.transform.localScale.y, chargeHealthBar.transform.localScale.z);
+            if (isHealthPower && healthPower > 2)
+            {
+                ScreenShake(healthPower / 100, healthPower / 100);
+                virtualCamera.GetComponent<CinemachineVirtualCamera>().Follow = playerTransform;
+                EffectsOnCharge(healthPower);
+                
             }
             else
             {
-                if(!stillCharging)
-                {
-                    chargePower = chargePower - 2;
-                }
-                if (chargePower < 2)
-                {
-                    chargePower = 2;
-                }
-
+                particleAccelerator.GetComponent<ParticleSystem>().startSize = START_EM_SIZE;
+                particleAccelerator.GetComponent<ParticleSystem>().startSpeed = START_EM_SPEED;
+                particleAccelerator.GetComponent<ParticleSystem>().emissionRate = START_EMISSION;
+                particleAccelerator.GetComponent<ParticleSystem>().enableEmission = false;
+                virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize = LENS_SIZE;
+                virtualCamera.GetComponent<CinemachineVirtualCamera>().Follow = eyePoint.GetComponent<Transform>();
             }
-            chargeTimer = 0;
-
         }
-
-        powerBar.transform.localScale = new Vector3((chargePower - 2) / MAX_POWER * 2, powerBar.transform.localScale.y, powerBar.transform.localScale.z); 
-
-       // Debug.Log(chargePower + " " + isCharging);
+        
+        Debug.Log(isHealthCharging + " <-H : R-> " + isRailGunCharging + "       :||:       " + healthPower + " <- HealthCharger : RailgunCharger -> " + chargePower);
     }
     public void ScreenShake(float amplifiedAmplitude, float frequency)
     {
         impulseSource.GenerateImpulse(new Vector2(amplifiedAmplitude, amplifiedAmplitude));
+    }
+    public void EffectsOnCharge(float ChargePower)
+    {
+        if (virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize > 3.5f)
+        {
+            virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize -= ChargePower / 5000;
+        }
+        particleAccel2.enableEmission = true;
+        particleAccel2.emissionRate += ChargePower / 250;
+        if (particleAccel2.startSize <= 0.7f)
+        {
+            particleAccel2.startSize += ChargePower / 10000;
+        }
+        particleAccel2.startSpeed += ChargePower / 5000;
+    }
+
+    private ChargeResult Charge(bool isCharging, float power, bool stillCharging, float timer, string chargeType)
+    {
+
+        ChargeResult result = new ChargeResult();
+
+        
+
+        if(chargeType == "railgun")
+        {
+            poweredByCharge = 1.0025f;
+            powerSpeed = 0.1f;
+        }
+        else if(chargeType == "health")
+        {
+            poweredByCharge = 1.001f;
+            powerSpeed = 0.05f;
+        }
+
+        result.power = power;
+        if (isCharging && timer > RAILGUN_CD)
+        {
+            result.power = System.MathF.Pow(result.power, poweredByCharge);
+            result.power = result.power + powerSpeed;
+            if (result.power > MAX_POWER)
+            {
+                result.power = MAX_POWER;
+            }
+        }
+        else
+        {
+            if (!stillCharging)
+            {
+
+                result.power = result.power - 2;
+            }
+            if (result.power < 2)
+            {
+                result.power = 2;
+
+            }
+
+        }
+
+        return result;
     }
 
     IEnumerator Railgun()
@@ -173,6 +318,8 @@ public class Movement : MonoBehaviour
         isRailGunning = false;
 
     }
+
+    
 
     IEnumerator Dodge()
     {
