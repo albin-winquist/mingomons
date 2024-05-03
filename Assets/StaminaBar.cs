@@ -11,7 +11,7 @@ public class StaminaBar : MonoBehaviour
     public float MaxStamina;
     public Image staminaBar;
     public Slider staminaSlider;
-    GameObject hpBar;
+    public GameObject hpBar;
 
     float health;
     
@@ -39,18 +39,20 @@ public class StaminaBar : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.LeftShift) && Stamina >= 25)
         {
-            SpendStamina(25);
+            SpendStamina(25, 0);
            
         }
         if (Input.GetKeyDown(KeyCode.Q) && Stamina >= 30 && health < hpBar.GetComponentInChildren<Healthbar>().maxHealth)
         {
-            SpendStamina(30);
+            SpendStamina(30, 0);
+            
         }
     }
 
-    public void SpendStamina(float Spent)
+    public void SpendStamina(float Spent, float Health)
     {
-        Stamina -= Spent;
+        Stamina -= Spent; //sorry att jag valde här lol
         staminaBar.fillAmount = Stamina / 100f;
+        hpBar.GetComponentInChildren<Healthbar>().Heal(Health);
     }
 }

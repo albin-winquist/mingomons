@@ -13,6 +13,8 @@ TagManager:
   - VirtualCamera
   - EyePoint
   - ParticleTag
+  - ExplosionTag
+  - ShotgunTag
   layers:
   - Default
   - TransparentFX
