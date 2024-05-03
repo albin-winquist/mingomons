@@ -32,10 +32,10 @@ namespace HealthBar
 
         }
 
-        if (Input.GetKeyDown(KeyCode.Q) && Health != maxHealth)
-            {
-                Heal(20);
-            }
+        //if (Input.GetKeyDown(KeyCode.Q) && Health != maxHealth)
+        //    {
+        //        Heal(20);
+        //    }
 
         if (Health <= 0)
         {
