@@ -20,7 +20,7 @@ namespace HealthBar
     // Update is called once per frame
     void Update()
     {
-            Debug.Log(Health);
+           // Debug.Log(Health);
         if (healthSlider.value != Health)
         {
             healthSlider.value = Health;

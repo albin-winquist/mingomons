@@ -5,6 +5,8 @@ using Unity.VisualScripting;
 using UnityEngine;
 using Cinemachine;
 using UnityEngine.InputSystem;
+using TMPro;
+
 public class Movement : MonoBehaviour
 {
     const int MAX_POWER = 50;
@@ -16,6 +18,7 @@ public class Movement : MonoBehaviour
     public Transform firePoint;
 
     GameObject powerBar;
+    GameObject chargeHealthBar;
     
     [SerializeField] float dodgeSpeed = 10;
     [SerializeField] float dodgeTime = 0.5f;
@@ -33,14 +36,27 @@ public class Movement : MonoBehaviour
     private float railGunTimer = 0;
     private float waitRGtimer = 0;
 
+    public float healthPower = 2;
+    private bool isHealthPower = false;
+
+    private bool isHealthCharging = false;
+    private bool isRailGunCharging = false;
+
     private WeaponParent weaponParent;
     CinemachineImpulseSource impulseSource;
+    struct ChargeResult
+    {
+        public float power;
+        public float speed;
+    }
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         weaponParent = GetComponentInChildren<WeaponParent>();
         impulseSource = GetComponent<CinemachineImpulseSource>();
         powerBar = GameObject.FindGameObjectWithTag("PowerBar");
+        chargeHealthBar = GameObject.FindGameObjectWithTag("ChargeHealthBar");
     }
   
     
@@ -56,6 +72,7 @@ public class Movement : MonoBehaviour
         if(waitRGtimer > 1f)
         {
             stillCharging = false;
+           
             waitRGtimer = 0;
         }
 
@@ -73,18 +90,22 @@ public class Movement : MonoBehaviour
         }
         if(Input.GetKeyDown(KeyCode.X))
         {
-            isCharging = true;
+            isRailGunCharging = true;
             
+            isCharging = true;
+
         }
         if(Input.GetKeyUp(KeyCode.X))
         {
             isCharging = false;
+            
             stillCharging = true;
             if (chargePower > 20 && railGunTimer > RAILGUN_CD)
             {
                 
                 StartCoroutine(Railgun());
                 railGunTimer = 0;
+
                
             }
             else if(chargePower < 20)
@@ -102,52 +123,89 @@ public class Movement : MonoBehaviour
         {
             rb.velocity = movement * speed;
         }
-        else
-        {
-        
-        }
+       
+
         if (chargeTimer >= .01f)
         {
-            if (isCharging)
+            ChargeResult result = Charge(isCharging, chargePower, stillCharging, railGunTimer);
+            chargePower = result.power;
+            if (isCharging || isHealthPower)
             {
-                speed = 1.5f;
+                speed = 0.5f;
             }
             else
             {
                 speed = 5;
             }
-            if (isCharging && railGunTimer > RAILGUN_CD)
+            if ((!isCharging || railGunTimer  <= RAILGUN_CD) && (chargePower <= 2))
             {
-                chargePower = System.MathF.Pow(chargePower, 1.005f);
-                chargePower = chargePower + 0.25f;
-                if (chargePower > MAX_POWER)
-                {
-                    chargePower = MAX_POWER;
-                }
+                isRailGunCharging = false;
+                isHealthCharging = false;
             }
-            else
-            {
-                if(!stillCharging)
-                {
-                    chargePower = chargePower - 2;
-                }
-                if (chargePower < 2)
-                {
-                    chargePower = 2;
-                }
 
+
+            ChargeResult healthResult = Charge(isHealthPower, healthPower, stillCharging, railGunTimer);
+            healthPower = healthResult.power;
+ 
+            if ((!isHealthPower || railGunTimer <= RAILGUN_CD) && (healthPower <= 2))
+            {
+                isRailGunCharging = false;
+                isHealthCharging = false;
             }
+
+
+
             chargeTimer = 0;
-
         }
+        
 
-        powerBar.transform.localScale = new Vector3((chargePower - 2) / MAX_POWER * 2, powerBar.transform.localScale.y, powerBar.transform.localScale.z); 
-
-       // Debug.Log(chargePower + " " + isCharging);
+            if (!isHealthCharging)
+        {
+            powerBar.transform.localScale = new Vector3((chargePower - 2) / MAX_POWER * 2, powerBar.transform.localScale.y, powerBar.transform.localScale.z);
+        }
+        if (!isRailGunCharging)
+        {
+            chargeHealthBar.transform.localScale = new Vector3((healthPower - 2) / MAX_POWER * 2, chargeHealthBar.transform.localScale.y, chargeHealthBar.transform.localScale.z);
+        }
+        // Debug.Log(chargePower + " " + isCharging);
+        Debug.Log(isHealthCharging + " <-H : R-> " + isRailGunCharging);
     }
     public void ScreenShake(float amplifiedAmplitude, float frequency)
     {
         impulseSource.GenerateImpulse(new Vector2(amplifiedAmplitude, amplifiedAmplitude));
+    }
+
+    private ChargeResult Charge(bool isCharging, float power, bool stillCharging, float timer)
+    {
+
+        ChargeResult result = new ChargeResult();
+
+        result.power = power;
+        if (isCharging && timer > RAILGUN_CD)
+        {
+            result.power = System.MathF.Pow(result.power, 1.005f);
+            result.power = result.power + 0.25f;
+            if (result.power > MAX_POWER)
+            {
+                result.power = MAX_POWER;
+            }
+        }
+        else
+        {
+            if (!stillCharging)
+            {
+
+                result.power = result.power - 2;
+            }
+            if (result.power < 2)
+            {
+                result.power = 2;
+
+            }
+
+        }
+
+        return result;
     }
 
     IEnumerator Railgun()
@@ -173,6 +231,8 @@ public class Movement : MonoBehaviour
         isRailGunning = false;
 
     }
+
+    
 
     IEnumerator Dodge()
     {
