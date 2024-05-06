@@ -137,7 +137,7 @@ public class Movement : MonoBehaviour
             {
                 
                 StartCoroutine(Railgun());
-                ShotgunFire(chargePower);
+                StartCoroutine(ShotgunFire(chargePower));
                 railGunTimer = 0;
 
                
@@ -273,15 +273,20 @@ public class Movement : MonoBehaviour
         }
         particleAccel2.startSpeed += ChargePower / 5000;
     }
-    private void ShotgunFire(float ChargePower)
+    IEnumerator ShotgunFire(float ChargePower)
     {
         particleExp3.startSpeed += ChargePower / 4;
         Vector3 originalScale = new Vector3(particleExp4.transform.localScale.x, particleExp4.transform.localScale.y, particleExp4.transform.localScale.z);
-        Vector3 newScale = new Vector3(particleExp4.transform.localScale.x + ChargePower / 500, particleExp4.transform.localScale.y, particleExp4.transform.localScale.z);
+        Vector3 newScale = new Vector3(particleExp4.transform.localScale.x + ChargePower / 250, particleExp4.transform.localScale.y, particleExp4.transform.localScale.z);
         particleExp4.transform.localScale = newScale;
+        particleExp3.startSpeed += ChargePower/5;
+        particleExp3.startSize += ChargePower/500;
 
         particleExp3.Play();
-       
+        yield return new WaitForSeconds(0.1f);
+        particleExp4.transform.localScale = originalScale;
+        
+
     }
     private ChargeResult Charge(bool isCharging, float power, bool stillCharging, float timer, string chargeType)
     {
