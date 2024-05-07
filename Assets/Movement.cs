@@ -55,9 +55,15 @@ public class Movement : MonoBehaviour
 
     public float healthPower = 2;
     public bool isHealthPower = false;
+    private bool isJumpCharging = false;
+
 
     private bool isHealthCharging = false;
     private bool isRailGunCharging = false;
+
+
+    private bool isJumpPower = false;
+    public float jumpPower = 2;
 
 
     private WeaponParent weaponParent;
@@ -148,13 +154,13 @@ public class Movement : MonoBehaviour
                 stillCharging = false;
             }
         }
-        if(Input.GetKeyDown(KeyCode.R))
+        if(Input.GetKeyDown(KeyCode.F))
         {
             isHealthCharging = true;
 
             isHealthPower = true;
         }
-        if (Input.GetKeyUp(KeyCode.R))
+        if (Input.GetKeyUp(KeyCode.F))
         {
             isHealthPower = false;
 
@@ -169,9 +175,30 @@ public class Movement : MonoBehaviour
                 stillCharging = false;
             }
         }
+        if (Input.GetKeyDown(KeyCode.Space) && jumpPower <= 2 )
+        {
+            isJumpCharging = true;
+            isJumpPower = true;
+        }
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            isJumpPower = false;
+            stillCharging = true;
+            if (railGunTimer > RAILGUN_CD)
+            {
+                railGunTimer = 0;
+            }
+            else if(healthPower < 20)
+            {
+                stillCharging = false;
+            }
+        }
 
 
-        Vector2 movement = new Vector2(moveX, moveY);
+
+
+
+            Vector2 movement = new Vector2(moveX, moveY);
         if(!isRailGunning)
         {
             rb.velocity = movement * speed;
@@ -217,9 +244,14 @@ public class Movement : MonoBehaviour
                 isHealthCharging = false;
             }
 
+            ChargeResult jumpResult = Charge(isJumpPower, jumpPower, stillCharging, railGunTimer, "jump");
+            jumpPower = jumpResult.power;
+            if ((!isJumpPower || railGunTimer <= RAILGUN_CD) && (jumpPower <= 2))
+            {
+                isJumpCharging = false;
+            }
 
-
-            chargeTimer = 0;
+                chargeTimer = 0;
         }
         
 
@@ -253,8 +285,12 @@ public class Movement : MonoBehaviour
                 
             }
         }
-        
-        Debug.Log(isHealthCharging + " <-H : R-> " + isRailGunCharging + "       :||:       " + healthPower + " <- HealthCharger : RailgunCharger -> " + chargePower);
+        if (isJumpPower && jumpPower > 2)
+        {
+            virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize += jumpPower;
+        }
+
+        Debug.Log(isHealthCharging + " <-H : R-> " + isRailGunCharging + "       :||:       " + healthPower + " <- HealthCharger : RailgunCharger -> " + chargePower + "         JumpPower -> " + jumpPower);
     }
     public void ScreenShake(float amplifiedAmplitude, float frequency)
     {
@@ -264,7 +300,7 @@ public class Movement : MonoBehaviour
     {
         if (virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize > 3.5f)
         {
-            virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize += ChargePower /*/ 5000*/;
+            virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize -= ChargePower / 5000;
         }
         particleAccel2.enableEmission = true;
         particleAccel2.emissionRate += ChargePower / 2000;
@@ -358,8 +394,9 @@ public class Movement : MonoBehaviour
         isRailGunning = false;
 
     }
-
     
+
+
 
     IEnumerator Dodge()
     {

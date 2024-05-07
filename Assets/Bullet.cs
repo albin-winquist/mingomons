@@ -10,31 +10,33 @@ public class Bullet : MonoBehaviour
     GameObject player;
     GameObject spriteRendererTe;
     SpriteRenderer spriteRenderer;
-    CapsuleCollider2D yupsers;
+    Rigidbody2D rb;
+    int numOfHit = 0;
+    
     GameObject explosion;
-    GameObject particleAccelerator;
+    ParticleSystem particleAccelerator;
+
+    Transform test;
     [SerializeField] int trailPower;
-    Transform currPos;
-    Transform playerPos;
-    Transform ExpPos;
+    
     Vector3 dir;
     private float timer = 0;
     public void Start()
     {
         player = GameObject.FindGameObjectWithTag("player");
         explosion = GameObject.FindGameObjectWithTag("ExplosionTag");
-        particleAccelerator = GameObject.FindGameObjectWithTag("EnemyHitPTag");
-        ExpPos = particleAccelerator.GetComponent<Transform>();
-        playerPos = player.GetComponent<Transform>();
+        particleAccelerator = GetComponentInChildren<ParticleSystem>();
+        test = GetComponentInChildren<Transform>();
+        rb = GetComponent<Rigidbody2D>();
         trail = GetComponent<TrailRenderer>();
-         spriteRenderer = GetComponent<SpriteRenderer>();
-        currPos = GetComponent<Transform>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        
 
     }
     public void Update()
     {
         
-        Debug.Log(dir);
+       // Debug.Log(dir);
         if (trail != null)
         {
             trail.widthMultiplier = player.GetComponent<Movement>().chargePower / trailPower;
@@ -46,28 +48,20 @@ public class Bullet : MonoBehaviour
         }
        // Debug.Log(timer);
     }
-    public void dozing()
-    {
 
-       
-        particleAccelerator.GetComponent<ParticleSystem>().Play();
-    }
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D trigger)   
     {
-
-        explosion.GetComponent<Transform>().localPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
-        
-       // explosion.GetComponent<ParticleSystem>().Play();
-        dozing();   
-        
-        Debug.Log(spriteRenderer.enabled);
-        spriteRenderer.enabled = false;
-        Debug.Log(spriteRenderer.enabled);
-        Destroy(GetComponent<Rigidbody2D>());
+        GetComponent<Rigidbody2D>().simulated = false;
         GetComponent<CapsuleCollider2D>().enabled = false;
-       // explosion.GetComponent<Transform>().localPosition = new Vector3(0,0,0);   
-        //  Destroy(gameObject);
-    }
+        if (particleAccelerator != null)
+        {
+            particleAccelerator.Play();
+        }
+        spriteRenderer.enabled = false;
 
+        numOfHit++;
+
+    }
     
+
 }
