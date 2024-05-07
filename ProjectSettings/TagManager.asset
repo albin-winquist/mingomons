@@ -15,6 +15,7 @@ TagManager:
   - ParticleTag
   - ExplosionTag
   - ShotgunTag
+  - EnemyHitPTag
   layers:
   - Default
   - TransparentFX

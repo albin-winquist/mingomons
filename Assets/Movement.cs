@@ -59,6 +59,7 @@ public class Movement : MonoBehaviour
     private bool isHealthCharging = false;
     private bool isRailGunCharging = false;
 
+
     private WeaponParent weaponParent;
     CinemachineImpulseSource impulseSource;
     private StaminaBar staminaAccess;
@@ -263,7 +264,7 @@ public class Movement : MonoBehaviour
     {
         if (virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize > 3.5f)
         {
-            virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize -= ChargePower / 5000;
+            virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize += ChargePower /*/ 5000*/;
         }
         particleAccel2.enableEmission = true;
         particleAccel2.emissionRate += ChargePower / 2000;
