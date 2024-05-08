@@ -8,11 +8,14 @@ public class DetectPlayer : MonoBehaviour
     Transform player;
    [SerializeField] public bool PlayerInArea;
     string LocateTag = "player";
+    float speed = 2f;
+    float raycastDistance = 1.5f;
+    float avoidanceForce = 3f;
     
     // Start is called before the first frame update
     void Start()
     {
-        //player = GameObject.FindGameObjectWithTag("player").transform;
+        player = GameObject.FindGameObjectWithTag("player").transform;
         
     }
 
@@ -39,9 +42,21 @@ public class DetectPlayer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (PlayerInArea)
+        if (PlayerInArea && player != null)
         {
+            Vector3 direction = player.position - transform.position;
+            direction.Normalize();
 
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, raycastDistance);
+
+            if (hit.collider != null && !hit.collider.CompareTag("player"))
+            {
+                Vector3 avoidDir = Vector3.Cross(Vector3.forward, direction);
+                direction += avoidDir * avoidanceForce;
+                direction.Normalize();
+            }
+
+            transform.Translate(direction * speed * Time.deltaTime);
         }
     }
 }

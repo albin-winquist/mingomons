@@ -524,13 +524,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 356906563}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.67, y: 2.51, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.11056213, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1589190397}
-  m_Father: {fileID: 0}
+  m_Children: []
+  m_Father: {fileID: 1589190397}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &356906567
 MonoBehaviour:
@@ -544,7 +543,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49ec157b21b6b2646b3e13d044960ba1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 1
 --- !u!50 &356906568
 Rigidbody2D:
   serializedVersion: 4
@@ -557,7 +555,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 5
+  m_Mass: 10
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 0
@@ -584,11 +582,11 @@ PolygonCollider2D:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_LayerOverridePriority: 0
+  m_LayerOverridePriority: 1
   m_ForceSendLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -601,7 +599,7 @@ PolygonCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -1239,7 +1237,7 @@ MonoBehaviour:
   firePoint: {fileID: 113180495}
   railGunPoint: {fileID: 113180495}
   fireForce: 20
-  railgunBulletPrefab: {fileID: 8356293130789197502, guid: 718cc8d39d676e249bb73e9b4c54e148, type: 3}
+  railgunBulletPrefab: {fileID: 2705900223531841198, guid: 289daab092f7f6443b2c1834c5871015, type: 3}
 --- !u!212 &1063168395
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1621,11 +1619,12 @@ Transform:
   m_GameObject: {fileID: 1589190396}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -4.67, y: 2.51, z: 0}
   m_LocalScale: {x: 9.044688, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 356906566}
+  m_Children:
+  - {fileID: 356906566}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1589190398
 MonoBehaviour:
@@ -1665,18 +1664,18 @@ CircleCollider2D:
     m_Bits: 4294967295
   m_ContactCaptureLayers:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 119
   m_CallbackLayers:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 119
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.5
---- !u!4 &1669927910 stripped
-Transform:
+--- !u!224 &1669927910 stripped
+RectTransform:
   m_CorrespondingSourceObject: {fileID: 7345435112330882637, guid: a84fdf309a5af714785e226ff9f5d095, type: 3}
   m_PrefabInstance: {fileID: 8202061591298814937}
   m_PrefabAsset: {fileID: 0}
@@ -1823,8 +1822,8 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2031633680}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &1744721032 stripped
-Transform:
+--- !u!224 &1744721032 stripped
+RectTransform:
   m_CorrespondingSourceObject: {fileID: 7345435112330882637, guid: a84fdf309a5af714785e226ff9f5d095, type: 3}
   m_PrefabInstance: {fileID: 1790790923}
   m_PrefabAsset: {fileID: 0}
@@ -2191,11 +2190,14 @@ MonoBehaviour:
   rb: {fileID: 0}
   weapon: {fileID: 1063168394}
   firePoint: {fileID: 113180495}
+  eyePoint: {fileID: 0}
   dodgeSpeed: 7
   dodgeTime: 0.5
   dodgeCd: 2
   chargePower: 2
   healthPower: 2
+  isHealthPower: 0
+  jumpPower: 2
 --- !u!114 &2031633682
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2387,4 +2389,4 @@ SceneRoots:
   - {fileID: 609251386}
   - {fileID: 838497569}
   - {fileID: 1838177876}
-  - {fileID: 356906566}
+  - {fileID: 1589190397}

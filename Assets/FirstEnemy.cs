@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 public class FirstEnemy : MonoBehaviour
 {
 
-    [SerializeField]float speed = 3f;
+    //[SerializeField]float speed = 3f;
     private Rigidbody2D rb;
     private Transform player;
     bool PlayerDetected;
@@ -27,7 +27,8 @@ public class FirstEnemy : MonoBehaviour
 
         Vector2 dir = player.position - transform.position;
 
-        transform.Translate(dir * speed * Time.deltaTime);
+
+        //transform.Translate(dir * speed * Time.deltaTime);
 
     }
 }

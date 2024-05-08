@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5493677608709965853}
   - component: {fileID: 3697043743833399103}
   - component: {fileID: 9041837076927480761}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: railBullet 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -297,7 +297,7 @@ GameObject:
   - component: {fileID: 5840404788179048655}
   - component: {fileID: 734762740642334130}
   - component: {fileID: 7877467244166135485}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Particle System Two
   m_TagString: EnemyHitPTag
   m_Icon: {fileID: 0}
