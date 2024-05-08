@@ -57,6 +57,7 @@ public class Movement : MonoBehaviour
     public bool isHealthPower = false;
     private bool isJumpCharging = false;
 
+    float tempJumpPower = 2;
 
     private bool isHealthCharging = false;
     private bool isRailGunCharging = false;
@@ -65,6 +66,12 @@ public class Movement : MonoBehaviour
     private bool isJumpPower = false;
     public float jumpPower = 2;
 
+    private float minusPower = 2;
+
+    float tapChargeTimer = 0f;
+    bool isTapping = false;
+
+    float dampeningRate = 0.1f;
 
     private WeaponParent weaponParent;
     CinemachineImpulseSource impulseSource;
@@ -121,79 +128,108 @@ public class Movement : MonoBehaviour
 
         float moveX = Input.GetAxis("Horizontal");
         float moveY = Input.GetAxis("Vertical");
-
+        if(isTapping)
+        {
+            tapChargeTimer += Time.deltaTime;
+        }
      
         if (CanDodge && Input.GetKeyDown(KeyCode.LeftShift))
         {
             StartCoroutine(Dodge());
            
         }
-        if(Input.GetKeyDown(KeyCode.X))
+        if (!isJumpPower && !isHealthPower)
         {
-            isRailGunCharging = true;
-            
-            isCharging = true;
-
-        }
-        if(Input.GetKeyUp(KeyCode.X))
-        {
-            isCharging = false;
-            
-            stillCharging = true;
-            if (chargePower > 20 && railGunTimer > RAILGUN_CD)
+            if (Input.GetKeyDown(KeyCode.X))
             {
-                
-                StartCoroutine(Railgun());
-                StartCoroutine(ShotgunFire(chargePower));
-                railGunTimer = 0;
+                isRailGunCharging = true;
 
-               
-            }
-            else if(chargePower < 20)
-            {
-                stillCharging = false;
-            }
-        }
-        if(Input.GetKeyDown(KeyCode.F))
-        {
-            isHealthCharging = true;
-
-            isHealthPower = true;
-        }
-        if (Input.GetKeyUp(KeyCode.F))
-        {
-            isHealthPower = false;
-
-            stillCharging = true;
-            if (healthPower > 20 && railGunTimer > RAILGUN_CD)
-            {
-                railGunTimer = 0;
+                isCharging = true;
 
             }
-            else if (healthPower < 20)
+            if (Input.GetKeyUp(KeyCode.X))
             {
-                stillCharging = false;
+                isCharging = false;
+
+                stillCharging = true;
+                if (chargePower > 20 && railGunTimer > RAILGUN_CD)
+                {
+
+                    StartCoroutine(Railgun());
+                    StartCoroutine(ShotgunFire(chargePower));
+                    railGunTimer = 0;
+
+
+                }
+                else if (chargePower < 20)
+                {
+                    stillCharging = false;
+                }
+            }
+        }
+        if (!isJumpPower && !isCharging)
+        {
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                isHealthCharging = true;
+
+                isHealthPower = true;
+            }
+            if (Input.GetKeyUp(KeyCode.F))
+            {
+                isHealthPower = false;
+
+                stillCharging = true;
+                if (healthPower > 20 && railGunTimer > RAILGUN_CD)
+                {
+                    railGunTimer = 0;
+
+                }
+                else if (healthPower < 20)
+                {
+                    stillCharging = false;
+                }
             }
         }
         if (Input.GetKeyDown(KeyCode.Space) && jumpPower <= 2 )
         {
             isJumpCharging = true;
             isJumpPower = true;
+            isTapping = true;
         }
-        if (Input.GetKeyUp(KeyCode.Space))
+        if (tapChargeTimer > 1)
         {
-            isJumpPower = false;
-            stillCharging = true;
-            if (railGunTimer > RAILGUN_CD)
+            if (Input.GetKeyUp(KeyCode.Space))
             {
-                railGunTimer = 0;
+                isJumpPower = false;
+                stillCharging = true;
+                if (railGunTimer > RAILGUN_CD)
+                {
+                    railGunTimer = 0;
+                }
+                else if (healthPower < 20)
+                {
+                    stillCharging = false;
+                }
+                isTapping = false;
+                tapChargeTimer = 0;
             }
-            else if(healthPower < 20)
+            else if(!Input.GetKey(KeyCode.Space))
             {
-                stillCharging = false;
+                isJumpPower = false;
+                stillCharging = true;
+                if (railGunTimer > RAILGUN_CD)
+                {
+                    railGunTimer = 0;
+                }
+                else if (healthPower < 20)
+                {
+                    stillCharging = false;
+                }
+                isTapping = false;
+                tapChargeTimer = 0;
             }
         }
-
 
 
 
@@ -285,10 +321,16 @@ public class Movement : MonoBehaviour
                 
             }
         }
-        if (isJumpPower && jumpPower > 2)
+        if (jumpPower > 2)
         {
+            //if (!isJumpPower)
+            //{
+            //    jumpPower += Mathf.Pow(2, 1 / 2);
+            //}
             virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize += jumpPower;
+
         }
+        
 
         Debug.Log(isHealthCharging + " <-H : R-> " + isRailGunCharging + "       :||:       " + healthPower + " <- HealthCharger : RailgunCharger -> " + chargePower + "         JumpPower -> " + jumpPower);
     }
@@ -336,13 +378,21 @@ public class Movement : MonoBehaviour
         {
             poweredByCharge = 1.0025f;
             powerSpeed = 0.1f;
+            minusPower = this.minusPower;
         }
         else if(chargeType == "health")
         {
             poweredByCharge = 1.001f;
             powerSpeed = 0.05f;
+            minusPower = this.minusPower;
         }
-
+        else if (chargeType == "jump")
+        {
+            poweredByCharge = 1.005f;
+            powerSpeed = 0.05f;
+            minusPower = 0.5f;
+        }
+       
         result.power = power;
         if (isCharging && timer > RAILGUN_CD)
         {
@@ -358,7 +408,7 @@ public class Movement : MonoBehaviour
             if (!stillCharging)
             {
 
-                result.power = result.power - 2;
+                result.power = result.power - minusPower;
             }
             if (result.power < 2)
             {
