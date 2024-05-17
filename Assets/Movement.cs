@@ -8,10 +8,12 @@ using UnityEngine.InputSystem;
 using TMPro;
 using HealthBar;
 
+
 public class Movement : MonoBehaviour
 {
     const int MAX_POWER = 50;
     const int RAILGUN_CD = 3;
+    const float STILL_CHARGING_TIMER = 0.5f;
     float LENS_SIZE;
     float START_EMISSION;
     float START_EM_SPEED;
@@ -22,6 +24,8 @@ public class Movement : MonoBehaviour
     public Transform firePoint;
     Transform playerTransform;
     public Transform eyePoint;
+
+    Vector2 thing;
 
     GameObject particleAccelerator;
     ParticleSystem particleAccel2;
@@ -65,8 +69,12 @@ public class Movement : MonoBehaviour
 
     private bool isJumpPower = false;
     public float jumpPower = 2;
+    private float jumpTimer = 0;
+    private float jumpMaxed = 0;
 
     private float minusPower = 2;
+
+
 
     float tapChargeTimer = 0f;
     bool isTapping = false;
@@ -116,7 +124,7 @@ public class Movement : MonoBehaviour
         {
             waitRGtimer += Time.deltaTime;
         }
-        if(waitRGtimer > 1f)
+        if(waitRGtimer > STILL_CHARGING_TIMER)
         {
             stillCharging = false;
            
@@ -196,38 +204,43 @@ public class Movement : MonoBehaviour
             isJumpCharging = true;
             isJumpPower = true;
             isTapping = true;
+            jumpTimer = 0;
+        }
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            jumpMaxed = jumpPower;
         }
         if (tapChargeTimer > 1)
         {
-            if (Input.GetKeyUp(KeyCode.Space))
+           if (!Input.GetKey(KeyCode.Space))
             {
                 isJumpPower = false;
                 stillCharging = true;
+                
                 if (railGunTimer > RAILGUN_CD)
                 {
                     railGunTimer = 0;
                 }
-                else if (healthPower < 20)
-                {
-                    stillCharging = false;
-                }
+                
                 isTapping = false;
                 tapChargeTimer = 0;
             }
-            else if(!Input.GetKey(KeyCode.Space))
+        }
+
+        if (stillCharging)
+        {
+            jumpTimer += Time.deltaTime;
+            if (jumpTimer > STILL_CHARGING_TIMER)
             {
-                isJumpPower = false;
-                stillCharging = true;
-                if (railGunTimer > RAILGUN_CD)
-                {
-                    railGunTimer = 0;
-                }
-                else if (healthPower < 20)
-                {
-                    stillCharging = false;
-                }
-                isTapping = false;
-                tapChargeTimer = 0;
+                jumpTimer = STILL_CHARGING_TIMER;
+            }
+        }
+        else
+        {
+            jumpTimer -= Time.deltaTime;
+            if (jumpTimer < 0)
+            {
+                jumpTimer = 0;
             }
         }
 
@@ -279,15 +292,16 @@ public class Movement : MonoBehaviour
                 isRailGunCharging = false;
                 isHealthCharging = false;
             }
-
-            ChargeResult jumpResult = Charge(isJumpPower, jumpPower, stillCharging, railGunTimer, "jump");
+           
+            ChargeResult jumpResult = ChargeJump(isJumpPower, jumpPower, stillCharging, railGunTimer, jumpTimer, jumpMaxed);
             jumpPower = jumpResult.power;
+            
             if ((!isJumpPower || railGunTimer <= RAILGUN_CD) && (jumpPower <= 2))
             {
                 isJumpCharging = false;
             }
-
-                chargeTimer = 0;
+            
+            chargeTimer = 0;
         }
         
 
@@ -321,18 +335,27 @@ public class Movement : MonoBehaviour
                 
             }
         }
-        if (jumpPower > 2)
+        if (jumpPower > 2 && chargePower <= 2)
         {
-            //if (!isJumpPower)
-            //{
-            //    jumpPower += Mathf.Pow(2, 1 / 2);
-            //}
+
+
+            thing = new Vector3(playerTransform.localScale.x, playerTransform.localScale.y, playerTransform.localScale.z);
+            virtualCamera.GetComponent<CinemachineVirtualCamera>().Follow = playerTransform;
+            
+
+            
             virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize += jumpPower;
 
+            playerTransform.localScale = new Vector3(jumpPower,jumpPower, playerTransform.localScale.z);
+
+        }
+        else
+        {
+            playerTransform.localScale = new Vector3(1,1,1);
         }
         
 
-        Debug.Log(isHealthCharging + " <-H : R-> " + isRailGunCharging + "       :||:       " + healthPower + " <- HealthCharger : RailgunCharger -> " + chargePower + "         JumpPower -> " + jumpPower);
+       // Debug.Log(isHealthCharging + " <-H : R-> " + isRailGunCharging + "       :||:       " + healthPower + " <- HealthCharger : RailgunCharger -> " + chargePower + "         JumpPower -> " + jumpPower);
     }
     public void ScreenShake(float amplifiedAmplitude, float frequency)
     {
@@ -394,6 +417,7 @@ public class Movement : MonoBehaviour
         }
        
         result.power = power;
+
         if (isCharging && timer > RAILGUN_CD)
         {
             result.power = System.MathF.Pow(result.power, poweredByCharge);
@@ -417,9 +441,99 @@ public class Movement : MonoBehaviour
             }
 
         }
+        //if(stillCharging && chargeType == "jump")
+        //{
+        //    result.power += Mathf.Pow(2f, 0.5f);
+        //}
 
         return result;
     }
+
+    private ChargeResult ChargeJump(bool isCharging, float power, bool stillCharging, float timer, float jumpTimer, float jumpMaxed)
+    {
+        ChargeResult result = new ChargeResult();
+
+        result.power = power;
+
+        poweredByCharge = 1.005f;
+        powerSpeed = 0.1f;
+        minusPower = 0.5f;
+
+        if (isCharging)
+        {
+            Debug.Log("Charging");
+            result.power = System.MathF.Pow(result.power, poweredByCharge - 0.0055f);
+            result.power = result.power + powerSpeed;
+            if (result.power > MAX_POWER)
+            {
+                result.power = MAX_POWER;
+            }
+        }
+        else
+        {
+           if (stillCharging)
+           {
+                float percent = (STILL_CHARGING_TIMER - jumpTimer) / STILL_CHARGING_TIMER;
+
+                poweredByCharge = 1.0f + 0.0015f * percent;
+                powerSpeed = powerSpeed * percent;
+
+                result.power = System.MathF.Pow(result.power, poweredByCharge);
+                result.power = result.power + powerSpeed;
+
+                Debug.Log("Still charging " + percent);
+                
+            } else
+            {
+                if (!stillCharging && !isCharging && result.power > 2)
+                {
+                    Debug.Log(result.power);
+                    ScreenShake(result.power / 10, result.power / 10);
+                }
+                result.power = result.power - minusPower;
+               
+                if (result.power < 2)
+                {
+                    
+                    result.power = 2;
+                }
+            }
+
+        }
+
+   
+
+
+        //if(stillCharging && chargeType == "jump")
+        //{
+        //    result.power += Mathf.Pow(2f, 0.5f);
+        //}
+
+        /*
+
+        if (isCharging && timer > RAILGUN_CD)
+        {
+            result.power = Mathf.SmoothStep(result.power, MAX_POWER, 0.1f); 
+      
+            if (result.power > MAX_POWER)
+            {
+                result.power = MAX_POWER;
+            }
+        }
+        else
+        {
+            result.power = Mathf.SmoothStep(result.power, 2, 0.2f);
+            if (result.power < 2.0000002f)
+            {
+                result.power = 2;
+            }
+        }*/
+
+        return result;
+
+    }
+
+
 
     IEnumerator Railgun()
     {
