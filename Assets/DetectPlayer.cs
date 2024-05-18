@@ -1,62 +1,53 @@
+using Pathfinding;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class DetectPlayer : MonoBehaviour
 {
-    Transform player;
-   [SerializeField] public bool PlayerInArea;
-    string LocateTag = "player";
-    float speed = 2f;
-    float raycastDistance = 1.5f;
-    float avoidanceForce = 3f;
-    
-    // Start is called before the first frame update
-    void Start()
+    private Transform player;
+    [SerializeField] private bool playerInArea = false;
+    [SerializeField] private float speed = 2f;
+    [SerializeField] private float raycastDistance = 1.5f;
+    [SerializeField] private float avoidanceForce = 3f;
+    private string playerTag = "player";
+    public float maxSpeed;
+
+    private void Start()
     {
-        player = GameObject.FindGameObjectWithTag("player").transform;
-        
+        GameObject Detecotronamachine = GameObject.FindWithTag("Enemy");
+        // Attempt to find the player at the start
+        GameObject playerObj = GameObject.FindGameObjectWithTag(playerTag);
+        if (playerObj != null)
+        {
+            player = playerObj.transform;
+            
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag(LocateTag))
+        if (collision.CompareTag(playerTag))
         {
-            PlayerInArea = true;
-            player = collision.gameObject.transform;
+            playerInArea = true;
+            player = collision.transform;
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.CompareTag(LocateTag))
+        if (collision.CompareTag(playerTag))
         {
-            PlayerInArea = false;
+            playerInArea = false;
             player = null;
         }
     }
-
-
-
-    // Update is called once per frame
-    void Update()
+    
+    private void Update()
     {
-        if (PlayerInArea && player != null)
+        if (playerInArea == true)
         {
-            Vector3 direction = player.position - transform.position;
-            direction.Normalize();
-
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, raycastDistance);
-
-            if (hit.collider != null && !hit.collider.CompareTag("player"))
-            {
-                Vector3 avoidDir = Vector3.Cross(Vector3.forward, direction);
-                direction += avoidDir * avoidanceForce;
-                direction.Normalize();
-            }
-
-            transform.Translate(direction * speed * Time.deltaTime);
+            speed = 3f;
         }
     }
 }
