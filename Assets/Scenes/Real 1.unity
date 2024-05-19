@@ -456,6 +456,7 @@ GameObject:
   - component: {fileID: 356906565}
   - component: {fileID: 356906568}
   - component: {fileID: 356906569}
+  - component: {fileID: 356906570}
   m_Layer: 0
   m_Name: Ultra ENEMITRON (sprite)
   m_TagString: Untagged
@@ -504,9 +505,9 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 2747690628134850419, guid: b670ab75dde984907b8570040daa08c5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f4ba33f2ed6d85b448a7f6d026bbaf06, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
+  m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 1, y: 0.8828125}
@@ -525,7 +526,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.11196164, y: 0.7272727, z: 1}
+  m_LocalScale: {x: 0.6, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1589190397}
@@ -564,12 +565,107 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 356906563}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c5d1bfcbce28b60419be043d9fd4335a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   aiPath: {fileID: 1589190400}
+--- !u!60 &356906570
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 356906563}
+  m_Enabled: 0
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0.235, y: 0.185, z: 0.205, w: 0.285}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 0.8828125}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 0.23535618, y: -0.15887386}
+      - {x: 0.25779158, y: -0.1508078}
+      - {x: 0.25367826, y: -0.14310265}
+      - {x: 0.22182336, y: -0.10321409}
+      - {x: 0.18337995, y: -0.028323062}
+      - {x: 0.20384283, y: 0.026676936}
+      - {x: 0.18582207, y: 0.07503092}
+      - {x: 0.16326421, y: 0.11180058}
+      - {x: 0.15128495, y: 0.14357023}
+      - {x: 0.09826427, y: 0.13521636}
+      - {x: 0.11651639, y: 0.16683151}
+      - {x: 0.095842265, y: 0.17631674}
+      - {x: 0.07732645, y: 0.19173877}
+      - {x: 0.06221076, y: 0.16012357}
+      - {x: -0.08, y: 0.19999999}
+      - {x: -0.19666542, y: 0.18791038}
+      - {x: -0.23533225, y: 0.083100736}
+      - {x: -0.22546521, y: -0.063037306}
+      - {x: -0.185, y: -0.074999996}
+      - {x: -0.225, y: -0.065}
+      - {x: -0.25, y: -0.074999996}
+      - {x: -0.26999998, y: -0.12}
+      - {x: -0.26999998, y: -0.16}
+      - {x: -0.27559814, y: -0.18493655}
+      - {x: -0.26019943, y: -0.22980966}
+      - {x: -0.195, y: -0.225}
+      - {x: -0.28219712, y: -0.24329105}
+      - {x: -0.19999999, y: -0.26999998}
+      - {x: -0.2319977, y: -0.2896828}
+      - {x: -0.15626654, y: -0.30759317}
+      - {x: -0.145, y: -0.28}
+      - {x: -0.11, y: -0.295}
+      - {x: -0.08, y: -0.26}
+      - {x: -0.049999997, y: -0.295}
+      - {x: -0.02, y: -0.305}
+      - {x: 0, y: -0.26999998}
+      - {x: -0.005, y: -0.26}
+      - {x: 0.005, y: -0.24499999}
+      - {x: 0, y: -0.26}
+      - {x: 0, y: -0.275}
+      - {x: 0.005, y: -0.29}
+      - {x: 0.044999998, y: -0.29999998}
+      - {x: 0.08557985, y: -0.27857956}
+      - {x: 0.13499999, y: -0.285}
+      - {x: 0.12944792, y: -0.28161559}
+      - {x: 0.14467499, y: -0.27064863}
+      - {x: 0.14568119, y: -0.22774771}
+      - {x: 0.17636238, y: -0.23193988}
+      - {x: 0.18603735, y: -0.21193995}
+      - {x: 0.21214157, y: -0.19145644}
+  m_UseDelaunayMesh: 0
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -1183,7 +1279,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   version: 1
   data:
-    dataString: UEsDBBQAAAgIAAAIIexFZDrfXgIAABQFAAALACQAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQF1VE1z2jAQ/SuMzk3GxkkYemsdQnpIwoRmcvFFSGusQZY8+giQDP+9K9nGLp2eEO+93X27WvmLCGUbYE6bpRH8SXMg3ycknMm3yUA+woFutVqLT+g174K7Koho1LxSJzTiaQizugZnBPuhtjKIEwS9EqU29YJvIdfWWYRLKi0gZbQL0Qqhrwk54M/VPIQc8TSdhdMnnubJ5IRHBsqBGaS9sJe1Kq+YpHUDPFgexNOsU6dZlClsplME40xLKWznhLhjEzvNaWM99oECLih2Fsun1yFXBWJbuZB5HP5SlhZcZ8rQ470wOKI2L/mp27nV1O5aZx9U+lBpensXXbVJn/7hr9JIl0bXj33dNAk1XCXY7pUeGbVuNNgxfD+yHge0p3JHNxLeK1DPemm0VxxJZ3wI9Ram98Pfc2t5BWw34K3VC9A3/7+e0MMpdn/Ipag3gbq+aYG11HHi8fLB4N38QsNxNWyXAtHg4s3Cb7od71BHPAhjHVJdlyrY22hvgpQs4sxCN97l2iiIcGe6AUWlO64wjbu8wgtuVPaCeaDhtXTFO65/BBchER70SXJBrfT+fFm20vsnsNWLd1IoGEwH4hnnlGul2g0bz6QPW3tTUjYK23rB/14tksxushmdJ1nJb3lG+dU0nd+yWZZm803C6N2MxN0TCvukctUa7caDt6aG5Ar3rP+ITJaGNnHbuaH7pfis9WjkQpV6zQyAemkznI2DwSL4LvmCCxzQGpwTKt43+SqI1GwHvDgnKmKni4MztBiyFKQRH9oFpCB5/GoUJMDnXV4Z+BCwD8X7ZCdy+gNQSwMEFAAACAgAAAgh7K8s0F5tAAAAeAAAAAkAJABtZXRhLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQGrVipLLSrOzM9TslIw0TPSMzTXUVBKL0osyCgGihiCOKWZKSB2tJKBuYmxeaKlgXFaimmKcWKKrpGhpWmyubGhsWWSQXKimblSLFB9SWVBql9ibipET0BiSUZaZl5KZl66nntRZoo7yGil2FoAUEsBAi0AFAAACAgAAAgh7EVkOt9eAgAAFAUAAAsAJAAAAAAAAAAAAAAAAAAAAGdyYXBoMC5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0BUEsBAi0AFAAACAgAAAgh7K8s0F5tAAAAeAAAAAkAJAAAAAAAAAAAAAAAqwIAAG1ldGEuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAVBLBQYAAAAAAgACALgAAABjAwAAAAA=
+    dataString: UEsDBBQAAAgIAAAIIewag/xlXgIAABQFAAALACQAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQF1VE1z2jAQ/SuMzk3GxiEMvbUOIT0kYUo7ufgipDXWIEsefQRIhv/elWxjl05PiPfe7r5drfxJhLINMKfNygj+rDmQrxMSzuTLZCCf4Eh3Wm3EB/SaN8FdFUQ0an5SJzTiaQizugZnBPumdjKIEwS9EqU29ZLvINfWWYRLKi0gZbQL0Qqhzwk54s/NIoSc8DSdh9MHnhbJ5IxHBsqBGaS9sJe1Kq+YpHUDPFgexNOsU6dZlClsplME40xLKWznhLhTEzvNaWM99oECLih2FsuntzMEKhC7yoXM4/DXsrTgOlOGnh6EwRG1ecl33c6tpnbfOnun0odK09l9dNUmff6Hv0kjXRpdP/V10yTUcJVg+5/0xKh1o8GO4YeR9TigA5V7upXwVoF60SujveJIOuNDqLcwfRj+XlrLK2D7AW+tXoG++f/1hB7OsftjLkW9DdTtXQtspI4Tj5cPBu/mBxqOq2G7FIgGF78t/KK78Q51xKMw1iHVdamCva32JkjJMs4sdONdro2CCHemG1BUutMa07jrK7ziRmWvmEcaXktXvOP6R3AVEuFBnyRX1FofLpdlK314Blu9eieFgsF0IF5wTrlWqt2w8Uz6sI03JWWjsJ0X/O/VIsn8LpvTRZKVfMYzym+m6WLG5lmaLbYJo/dzEndPKOyTynVrtBsP3poakivcs/4jMlkZ2sRt54YeVuKj1qORC1XqDTMA6rXNcDEOBovgu+RLLnBAG3BOqHjf5LMgUrM98OKSqIidLo/O0GLIUpBGvGsXkILk8atRkABfdnlt4F3AIRTvk53J+Q9QSwMEFAAACAgAAAgh7K8s0F5tAAAAeAAAAAkAJABtZXRhLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQGrVipLLSrOzM9TslIw0TPSMzTXUVBKL0osyCgGihiCOKWZKSB2tJKBuYmxeaKlgXFaimmKcWKKrpGhpWmyubGhsWWSQXKimblSLFB9SWVBql9ibipET0BiSUZaZl5KZl66nntRZoo7yGil2FoAUEsBAi0AFAAACAgAAAgh7BqD/GVeAgAAFAUAAAsAJAAAAAAAAAAAAAAAAAAAAGdyYXBoMC5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0BUEsBAi0AFAAACAgAAAgh7K8s0F5tAAAAeAAAAAkAJAAAAAAAAAAAAAAAqwIAAG1ldGEuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAVBLBQYAAAAAAgACALgAAABjAwAAAAA=
     upgradeData: 
     file_cachedStartup: {fileID: 0}
     data_cachedStartup: 
@@ -1874,7 +1970,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   version: 5
-  radius: 0.5
+  radius: 0.6
   height: 0.01
   canMove: 1
   maxSpeed: 1.5
@@ -1897,7 +1993,7 @@ MonoBehaviour:
   maxAcceleration: -2.5
   rotationSpeed: 360
   slowdownDistance: 0.8
-  pickNextWaypointDist: 1.2
+  pickNextWaypointDist: 1.4
   endReachedDistance: 0.2
   alwaysDrawGizmos: 0
   slowWhenNotFacingTarget: 1
@@ -2103,7 +2199,7 @@ CircleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1726955370}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
