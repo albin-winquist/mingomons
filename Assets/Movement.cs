@@ -24,14 +24,21 @@ public class Movement : MonoBehaviour
     public Transform firePoint;
     Transform playerTransform;
     public Transform eyePoint;
-
+    float minuesValue = 0.002f;
+    bool preJumper = false;
+    float subJumper = 1;
     Vector2 thing;
+
+    bool tryde = false;
+    bool railgunTride = false;
+    bool canJump = false;
 
     GameObject particleAccelerator;
     ParticleSystem particleAccel2;
     GameObject particleExplosion;
     ParticleSystem particleExp2;
     ParticleSystem particleExp3;
+    GameObject jumpPart;
     GameObject particleExp4;
 
     float poweredByCharge;
@@ -74,6 +81,7 @@ public class Movement : MonoBehaviour
 
     private float minusPower = 2;
 
+    float jumpPreTimer = 0;
 
 
     float tapChargeTimer = 0f;
@@ -103,7 +111,7 @@ public class Movement : MonoBehaviour
         particleAccelerator = GameObject.FindGameObjectWithTag("ParticleTag");
         particleExplosion = GameObject.FindGameObjectWithTag("ExplosionTag");
         particleExp4 = GameObject.FindGameObjectWithTag("ShotgunTag");
-
+        jumpPart = GameObject.FindGameObjectWithTag("JumpPTag");
         staminaAccess = GetComponentInChildren<StaminaBar>();
         LENS_SIZE = virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize;
         START_EM_SIZE = particleAccelerator.GetComponent<ParticleSystem>().startSize;
@@ -133,6 +141,7 @@ public class Movement : MonoBehaviour
 
         chargeTimer += Time.deltaTime;
         railGunTimer += Time.deltaTime;
+        jumpPreTimer += Time.deltaTime;
 
         float moveX = Input.GetAxis("Horizontal");
         float moveY = Input.GetAxis("Vertical");
@@ -150,6 +159,7 @@ public class Movement : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.X))
             {
+                railgunTride = true;
                 isRailGunCharging = true;
 
                 isCharging = true;
@@ -199,12 +209,10 @@ public class Movement : MonoBehaviour
                 }
             }
         }
-        if (Input.GetKeyDown(KeyCode.Space) && jumpPower <= 2 )
+        if (Input.GetKeyDown(KeyCode.Space) && jumpPower <= 2 && !canJump )
         {
-            isJumpCharging = true;
-            isJumpPower = true;
-            isTapping = true;
-            jumpTimer = 0;
+            StartCoroutine(preJump());
+         
         }
         if (Input.GetKeyUp(KeyCode.Space))
         {
@@ -245,6 +253,8 @@ public class Movement : MonoBehaviour
         }
 
 
+       
+
 
 
             Vector2 movement = new Vector2(moveX, moveY);
@@ -256,6 +266,7 @@ public class Movement : MonoBehaviour
 
         if (chargeTimer >= .01f)
         {
+
             ChargeResult result = Charge(isCharging, chargePower, stillCharging, railGunTimer, "railgun");
             chargePower = result.power;
 
@@ -292,16 +303,22 @@ public class Movement : MonoBehaviour
                 isRailGunCharging = false;
                 isHealthCharging = false;
             }
-           
-            ChargeResult jumpResult = ChargeJump(isJumpPower, jumpPower, stillCharging, railGunTimer, jumpTimer, jumpMaxed);
-            jumpPower = jumpResult.power;
-            
-            if ((!isJumpPower || railGunTimer <= RAILGUN_CD) && (jumpPower <= 2))
+            if (!railgunTride)
             {
-                isJumpCharging = false;
+                ChargeResult jumpResult = ChargeJump(isJumpPower, jumpPower, stillCharging, railGunTimer, jumpTimer, jumpMaxed);
+                jumpPower = jumpResult.power;
+
+                if ((!isJumpPower || railGunTimer <= RAILGUN_CD) && (jumpPower <= 2))
+                {
+                    isJumpCharging = false;
+                }
             }
-            
             chargeTimer = 0;
+        }
+
+        if(!isCharging && chargePower  <= 2.01f) 
+        {
+            railgunTride = false;
         }
         
 
@@ -351,11 +368,41 @@ public class Movement : MonoBehaviour
         }
         else
         {
-            playerTransform.localScale = new Vector3(1,1,1);
+            if(!preJumper)
+            {
+                 playerTransform.localScale = new Vector3(1,1,1);
+            }
         }
-        
 
-       // Debug.Log(isHealthCharging + " <-H : R-> " + isRailGunCharging + "       :||:       " + healthPower + " <- HealthCharger : RailgunCharger -> " + chargePower + "         JumpPower -> " + jumpPower);
+
+        if (jumpPreTimer >= .01f)
+        {
+            if (preJumper)
+            {
+                
+                minuesValue += 0.00001f;
+                subJumper -= minuesValue;
+
+            }
+            else
+            {
+                minuesValue = 0.002f;
+            }
+            jumpPreTimer = 0;
+        }
+        if (preJumper)
+        {
+            speed = 0.5f;
+
+        }
+        if(subJumper < 1)
+        {
+            playerTransform.localScale = new Vector3(subJumper, subJumper, 1);
+        }
+
+
+
+        // Debug.Log(isHealthCharging + " <-H : R-> " + isRailGunCharging + "       :||:       " + healthPower + " <- HealthCharger : RailgunCharger -> " + chargePower + "         JumpPower -> " + jumpPower);
     }
     public void ScreenShake(float amplifiedAmplitude, float frequency)
     {
@@ -402,6 +449,7 @@ public class Movement : MonoBehaviour
             poweredByCharge = 1.0025f;
             powerSpeed = 0.1f;
             minusPower = this.minusPower;
+
         }
         else if(chargeType == "health")
         {
@@ -429,6 +477,7 @@ public class Movement : MonoBehaviour
         }
         else
         {
+            
             if (!stillCharging)
             {
 
@@ -461,7 +510,7 @@ public class Movement : MonoBehaviour
 
         if (isCharging)
         {
-            Debug.Log("Charging");
+           
             result.power = System.MathF.Pow(result.power, poweredByCharge - 0.0055f);
             result.power = result.power + powerSpeed;
             if (result.power > MAX_POWER)
@@ -473,6 +522,7 @@ public class Movement : MonoBehaviour
         {
            if (stillCharging)
            {
+                tryde = true;
                 float percent = (STILL_CHARGING_TIMER - jumpTimer) / STILL_CHARGING_TIMER;
 
                 poweredByCharge = 1.0f + 0.0015f * percent;
@@ -481,20 +531,29 @@ public class Movement : MonoBehaviour
                 result.power = System.MathF.Pow(result.power, poweredByCharge);
                 result.power = result.power + powerSpeed;
 
-                Debug.Log("Still charging " + percent);
+                
                 
             } else
             {
-                if (!stillCharging && !isCharging && result.power > 2)
+                if (!stillCharging && !isCharging && result.power > 2 && !railgunTride)
                 {
                     Debug.Log(result.power);
                     ScreenShake(result.power / 10, result.power / 10);
                 }
+                
+                if (tryde && result.power < 2.05f && !railgunTride)
+                {
+                    particleExp2.Play();
+                    tryde = false;
+                    canJump = false;
+                }
+
                 result.power = result.power - minusPower;
+
                
                 if (result.power < 2)
                 {
-                    
+                   
                     result.power = 2;
                 }
             }
@@ -503,38 +562,25 @@ public class Movement : MonoBehaviour
 
    
 
-
-        //if(stillCharging && chargeType == "jump")
-        //{
-        //    result.power += Mathf.Pow(2f, 0.5f);
-        //}
-
-        /*
-
-        if (isCharging && timer > RAILGUN_CD)
-        {
-            result.power = Mathf.SmoothStep(result.power, MAX_POWER, 0.1f); 
-      
-            if (result.power > MAX_POWER)
-            {
-                result.power = MAX_POWER;
-            }
-        }
-        else
-        {
-            result.power = Mathf.SmoothStep(result.power, 2, 0.2f);
-            if (result.power < 2.0000002f)
-            {
-                result.power = 2;
-            }
-        }*/
-
         return result;
 
     }
 
 
+    IEnumerator preJump()
+    {
+        preJumper = true;
+        yield return new WaitForSeconds(1.5f);
+        jumpPart.GetComponent<ParticleSystem>().Play();
+        subJumper = 1;
+        preJumper = false;
+        canJump = true;
+        isJumpCharging = true;
+        isJumpPower = true;
+        isTapping = true;
 
+        jumpTimer = 0;
+    }
     IEnumerator Railgun()
     {
 

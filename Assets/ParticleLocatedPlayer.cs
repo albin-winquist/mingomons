@@ -18,7 +18,7 @@ public class ParticleLocatedPlayer : MonoBehaviour
     void Update()
     {
    
-        if (player != null && currPos != null && playerOBJ.GetComponent<Movement>().isHealthPower)
+        if (player != null && currPos != null /*&& playerOBJ.GetComponent<Movement>().isHealthPower*/)
         {
             
             currPos.position = new Vector3(player.position.x, player.position.y, currPos.position.z);

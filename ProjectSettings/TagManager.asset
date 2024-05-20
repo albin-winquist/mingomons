@@ -16,6 +16,7 @@ TagManager:
   - ExplosionTag
   - ShotgunTag
   - EnemyHitPTag
+  - JumpPTag
   layers:
   - Default
   - TransparentFX
