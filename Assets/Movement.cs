@@ -18,6 +18,9 @@ public class Movement : MonoBehaviour
     float START_EMISSION;
     float START_EM_SPEED;
     float START_EM_SIZE;
+
+    [SerializeField] GameObject attackPoint;
+    float attackRange = 0.5f;
     [SerializeField] float speed = 5;
     public Rigidbody2D rb;
     public Bullets weapon;
@@ -29,7 +32,9 @@ public class Movement : MonoBehaviour
     float subJumper = 1;
     Vector2 thing;
 
-    bool tryde = false;
+    float yup = 0;
+
+    public bool tryde = false;
     bool railgunTride = false;
     bool canJump = false;
 
@@ -44,9 +49,12 @@ public class Movement : MonoBehaviour
     float poweredByCharge;
     float powerSpeed;
 
+    public bool isJumping;
+
     GameObject powerBar;
     GameObject chargeHealthBar;
     GameObject virtualCamera;
+    GameObject jumpSHOPTag;
     
     [SerializeField] float dodgeSpeed = 10;
     [SerializeField] float dodgeTime = 0.5f;
@@ -83,6 +91,7 @@ public class Movement : MonoBehaviour
 
     float jumpPreTimer = 0;
 
+    
 
     float tapChargeTimer = 0f;
     bool isTapping = false;
@@ -112,6 +121,7 @@ public class Movement : MonoBehaviour
         particleExplosion = GameObject.FindGameObjectWithTag("ExplosionTag");
         particleExp4 = GameObject.FindGameObjectWithTag("ShotgunTag");
         jumpPart = GameObject.FindGameObjectWithTag("JumpPTag");
+        jumpSHOPTag = GameObject.FindGameObjectWithTag("JumpSHOPTag");
         staminaAccess = GetComponentInChildren<StaminaBar>();
         LENS_SIZE = virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize;
         START_EM_SIZE = particleAccelerator.GetComponent<ParticleSystem>().startSize;
@@ -155,7 +165,7 @@ public class Movement : MonoBehaviour
             StartCoroutine(Dodge());
            
         }
-        if (!isJumpPower && !isHealthPower)
+        if (!isJumpPower && !isHealthPower && !isJumping)
         {
             if (Input.GetKeyDown(KeyCode.X))
             {
@@ -185,7 +195,7 @@ public class Movement : MonoBehaviour
                 }
             }
         }
-        if (!isJumpPower && !isCharging)
+        if (!isJumpPower && !isCharging && !isJumping)
         {
             if (Input.GetKeyDown(KeyCode.F))
             {
@@ -315,13 +325,13 @@ public class Movement : MonoBehaviour
             }
             chargeTimer = 0;
         }
+       
 
         if(!isCharging && chargePower  <= 2.01f) 
         {
             railgunTride = false;
         }
-        
-
+       
         if (!isHealthCharging)
         {
             powerBar.transform.localScale = new Vector3((chargePower * 10 - 2) / MAX_POWER * 2, powerBar.transform.localScale.y, powerBar.transform.localScale.z);
@@ -355,12 +365,21 @@ public class Movement : MonoBehaviour
         if (jumpPower > 2 && chargePower <= 2)
         {
 
-
+           
+            if(yup<jumpPower)
+            {
+                yup = jumpPower;
+            }
+            else if(!tryde)
+            {
+                yup = 0;
+            }
+            attackRange = yup;
             thing = new Vector3(playerTransform.localScale.x, playerTransform.localScale.y, playerTransform.localScale.z);
             virtualCamera.GetComponent<CinemachineVirtualCamera>().Follow = playerTransform;
-            
+            gameObject.GetComponent<BoxCollider2D>().enabled = false;
 
-            
+
             virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize += jumpPower;
 
             playerTransform.localScale = new Vector3(jumpPower,jumpPower, playerTransform.localScale.z);
@@ -372,6 +391,7 @@ public class Movement : MonoBehaviour
             {
                  playerTransform.localScale = new Vector3(1,1,1);
             }
+            gameObject.GetComponent<BoxCollider2D>().enabled = true;
         }
 
 
@@ -403,6 +423,14 @@ public class Movement : MonoBehaviour
 
 
         // Debug.Log(isHealthCharging + " <-H : R-> " + isRailGunCharging + "       :||:       " + healthPower + " <- HealthCharger : RailgunCharger -> " + chargePower + "         JumpPower -> " + jumpPower);
+    }
+
+    public void setExplosionPower(float chargePower)
+    {
+        jumpSHOPTag.GetComponent<ParticleSystem>().startSize *= chargePower;
+        jumpSHOPTag.GetComponent<ParticleSystem>().startSpeed *= chargePower;
+        jumpSHOPTag.GetComponent<ParticleSystem>().Play();
+        ScreenShake(chargePower * 5, chargePower * 5);
     }
     public void ScreenShake(float amplifiedAmplitude, float frequency)
     {
@@ -497,7 +525,19 @@ public class Movement : MonoBehaviour
 
         return result;
     }
+    private void JumpCollider()
+    {
+        Collider2D[] enemiesHit = Physics2D.OverlapCircleAll(attackPoint.transform.position, attackRange/2);
 
+        foreach (Collider2D enemy in enemiesHit)
+        {
+            if (enemy.gameObject.CompareTag("Enemy"))
+            {
+                Debug.Log("JUP");
+            }
+                
+        }
+    }
     private ChargeResult ChargeJump(bool isCharging, float power, bool stillCharging, float timer, float jumpTimer, float jumpMaxed)
     {
         ChargeResult result = new ChargeResult();
@@ -537,15 +577,20 @@ public class Movement : MonoBehaviour
             {
                 if (!stillCharging && !isCharging && result.power > 2 && !railgunTride)
                 {
-                    Debug.Log(result.power);
+              
                     ScreenShake(result.power / 10, result.power / 10);
                 }
                 
                 if (tryde && result.power < 2.05f && !railgunTride)
                 {
-                    particleExp2.Play();
+                    setExplosionPower(yup/10);
+
+                    JumpCollider();
                     tryde = false;
                     canJump = false;
+
+                    //attack innan isjumoing
+                    isJumping = false;
                 }
 
                 result.power = result.power - minusPower;
@@ -570,6 +615,7 @@ public class Movement : MonoBehaviour
     IEnumerator preJump()
     {
         preJumper = true;
+        isJumping = true;
         yield return new WaitForSeconds(1.5f);
         jumpPart.GetComponent<ParticleSystem>().Play();
         subJumper = 1;
