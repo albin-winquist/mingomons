@@ -34,6 +34,8 @@ public class Movement : MonoBehaviour
 
     float yup = 0;
 
+    bool hadCharged = false;
+
     public bool tryde = false;
     bool railgunTride = false;
     bool canJump = false;
@@ -61,7 +63,9 @@ public class Movement : MonoBehaviour
     [SerializeField] float dodgeCd = 2;
 
     bool isRailGunning;
-   
+    bool currentlyGunning = false;
+
+
     private bool CanDodge = true;
     private bool IsDodging = false;
     private bool isCharging = false;
@@ -169,9 +173,10 @@ public class Movement : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.X))
             {
+                currentlyGunning = true;
                 railgunTride = true;
                 isRailGunCharging = true;
-
+                
                 isCharging = true;
 
             }
@@ -180,6 +185,7 @@ public class Movement : MonoBehaviour
                 isCharging = false;
 
                 stillCharging = true;
+                hadCharged = true;
                 if (chargePower > 20 && railGunTimer > RAILGUN_CD)
                 {
 
@@ -199,6 +205,7 @@ public class Movement : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.F))
             {
+                currentlyGunning = true;
                 isHealthCharging = true;
 
                 isHealthPower = true;
@@ -206,12 +213,12 @@ public class Movement : MonoBehaviour
             if (Input.GetKeyUp(KeyCode.F))
             {
                 isHealthPower = false;
-
+                currentlyGunning = false;
                 stillCharging = true;
                 if (healthPower > 20 && railGunTimer > RAILGUN_CD)
                 {
                     railGunTimer = 0;
-
+                   
                 }
                 else if (healthPower < 20)
                 {
@@ -219,7 +226,8 @@ public class Movement : MonoBehaviour
                 }
             }
         }
-        if (Input.GetKeyDown(KeyCode.Space) && jumpPower <= 2 && !canJump )
+
+        if (Input.GetKeyDown(KeyCode.Space) && jumpPower <= 2 && !canJump && !currentlyGunning )
         {
             StartCoroutine(preJump());
          
@@ -420,7 +428,7 @@ public class Movement : MonoBehaviour
             playerTransform.localScale = new Vector3(subJumper, subJumper, 1);
         }
 
-
+       
 
         // Debug.Log(isHealthCharging + " <-H : R-> " + isRailGunCharging + "       :||:       " + healthPower + " <- HealthCharger : RailgunCharger -> " + chargePower + "         JumpPower -> " + jumpPower);
     }
@@ -496,6 +504,7 @@ public class Movement : MonoBehaviour
 
         if (isCharging && timer > RAILGUN_CD)
         {
+
             result.power = System.MathF.Pow(result.power, poweredByCharge);
             result.power = result.power + powerSpeed;
             if (result.power > MAX_POWER)
@@ -505,7 +514,8 @@ public class Movement : MonoBehaviour
         }
         else
         {
-            
+
+
             if (!stillCharging)
             {
 
@@ -516,6 +526,12 @@ public class Movement : MonoBehaviour
                 result.power = 2;
 
             }
+            if (hadCharged && result.power < 2.05f && currentlyGunning)
+            {
+                currentlyGunning = false;
+                hadCharged = false;
+            }
+
 
         }
         //if(stillCharging && chargeType == "jump")
@@ -533,7 +549,7 @@ public class Movement : MonoBehaviour
         {
             if (enemy.gameObject.CompareTag("Enemy"))
             {
-                Debug.Log("JUP");
+                
             }
                 
         }
