@@ -32,6 +32,8 @@ public class Movement : MonoBehaviour
     float subJumper = 1;
     Vector2 thing;
 
+    bool cantRailGun = false;
+
     float yup = 0;
 
     bool hadCharged = false;
@@ -45,6 +47,9 @@ public class Movement : MonoBehaviour
     GameObject particleExplosion;
     ParticleSystem particleExp2;
     ParticleSystem particleExp3;
+
+    ParticleSystem bloodPart;
+
     GameObject jumpPart;
     GameObject particleExp4;
 
@@ -127,6 +132,7 @@ public class Movement : MonoBehaviour
         particleExp4 = GameObject.FindGameObjectWithTag("ShotgunTag");
         jumpPart = GameObject.FindGameObjectWithTag("JumpPTag");
         jumpSHOPTag = GameObject.FindGameObjectWithTag("JumpSHOPTag");
+        bloodPart = GameObject.FindGameObjectWithTag("playerBlood").GetComponent<ParticleSystem>();
         staminaAccess = GetComponentInChildren<StaminaBar>();
         healthBar = GetComponentInChildren<Healthbar>();
         LENS_SIZE = virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize;
@@ -189,26 +195,32 @@ public class Movement : MonoBehaviour
             }
             if (Input.GetKeyUp(KeyCode.X))
             {
-                isCharging = false;
-
-                stillCharging = true;
-                hadCharged = true;
-                if (chargePower > 20 && railGunTimer > RAILGUN_CD)
+                
+                    isCharging = false;
+                
+                    
+                
+                    hadCharged = true;
+                if (!cantRailGun)
                 {
+                    stillCharging = true;
+                    if (chargePower > 20 && railGunTimer > RAILGUN_CD)
+                    {
 
-                    StartCoroutine(Railgun());
-                    StartCoroutine(ShotgunFire(chargePower));
-                    railGunTimer = 0;
+                        StartCoroutine(Railgun());
+                        StartCoroutine(ShotgunFire(chargePower));
+                        railGunTimer = 0;
 
 
-                }
-                else if (chargePower < 20)
-                {
-                    stillCharging = false;
+                    }
+                    else if (chargePower < 20)
+                    {
+                        stillCharging = false;
+                    }
                 }
             }
         }
-        if (!isJumpPower && !isCharging && !isJumping)
+        if (!isJumpPower && !isCharging && !isJumping && staminaAccess.Stamina > 40)
         {
             if (Input.GetKeyDown(KeyCode.F))
             {
@@ -230,8 +242,13 @@ public class Movement : MonoBehaviour
                 
             }
         }
+        if(staminaAccess.Stamina <= 0)
+        {
+            isHealthPower = false;
+            currentlyGunning = false;
+        }
 
-        if (Input.GetKeyDown(KeyCode.Space) && jumpPower <= 2 && !canJump && !currentlyGunning )
+        if (Input.GetKeyDown(KeyCode.Space) && jumpPower <= 2 && !canJump && !currentlyGunning && staminaAccess.Stamina > 25)
         {
             StartCoroutine(preJump());
          
@@ -284,8 +301,8 @@ public class Movement : MonoBehaviour
         {
             rb.velocity = movement * speed;
         }
-       
 
+        Debug.Log(currentlyGunning);
         if (chargeTimer >= .01f)
         {
 
@@ -343,9 +360,25 @@ public class Movement : MonoBehaviour
         }
         
 
-        if(!isCharging && chargePower  <= 2.01f) 
+
+        if(chargePower == MAX_POWER)
+        {
+            bloodPart.Play();
+            ScreenShake(5, 5);
+            isCharging = false;
+            
+            staminaAccess.SpendStamina(0, -15f);
+            cantRailGun = true;
+            stillCharging = false;
+           
+        }
+       
+
+
+        if (!isCharging && chargePower  <= 2.01f) 
         {
             railgunTride = false;
+            cantRailGun = false;
         }
        
         if (!isHealthCharging)
@@ -537,7 +570,7 @@ public class Movement : MonoBehaviour
                 result.power = 2;
 
             }
-            if (hadCharged && result.power < 2.05f && currentlyGunning)
+            if (hadCharged && result.power < 2.05f && currentlyGunning && chargeType == "railgun")
             {
                 currentlyGunning = false;
                 hadCharged = false;
@@ -558,9 +591,9 @@ public class Movement : MonoBehaviour
 
         foreach (Collider2D enemy in enemiesHit)
         {
-            if (enemy.gameObject.CompareTag("Enemy"))
+            if (enemy.gameObject.CompareTag("Enemy") && enemy.GetComponent<EnemyHealth>() != null)
             {
-                
+                enemy.GetComponent<EnemyHealth>().takeDamage(5);
             }
                 
         }
@@ -644,6 +677,7 @@ public class Movement : MonoBehaviour
         preJumper = true;
         isJumping = true;
         yield return new WaitForSeconds(0.5f);
+        staminaAccess.SpendStamina(25f, 0f);
         jumpPart.GetComponent<ParticleSystem>().Play();
         subJumper = 1;
         preJumper = false;
@@ -656,25 +690,27 @@ public class Movement : MonoBehaviour
     }
     IEnumerator Railgun()
     {
+        if (!cantRailGun)
+        {
+            isRailGunning = true;
+            Matrix4x4 recoilMatrix = new Matrix4x4();
+            Vector4 recoil = new Vector4();
+            float angle = Mathf.Deg2Rad * Random.Range(-5f, 5f);
+            recoil.x = Mathf.Cos(angle);
+            recoil.y = Mathf.Sin(angle);
+            recoilMatrix[0, 0] = recoil.x;
+            recoilMatrix[0, 1] = -recoil.y;
+            recoilMatrix[1, 0] = recoil.y;
+            recoilMatrix[1, 1] = recoil.x;
 
-        isRailGunning = true;
-        Matrix4x4 recoilMatrix = new Matrix4x4();
-        Vector4 recoil = new Vector4();
-        float angle = Mathf.Deg2Rad * Random.Range(-5f, 5f);
-        recoil.x = Mathf.Cos(angle);
-        recoil.y = Mathf.Sin(angle);
-        recoilMatrix[0, 0] = recoil.x;
-        recoilMatrix[0, 1] = -recoil.y;
-        recoilMatrix[1, 0] = recoil.y;
-        recoilMatrix[1, 1] = recoil.x;
+            Vector3 direction = recoilMatrix.MultiplyVector(firePoint.up);
+            rb.AddForce(-direction * 10 * (chargePower - 2) / MAX_POWER, ForceMode2D.Impulse);
+            ScreenShake(chargePower / 10, chargePower / 50);
 
-        Vector3 direction = recoilMatrix.MultiplyVector(firePoint.up);
-        rb.AddForce(-direction * 10 * (chargePower - 2) / MAX_POWER, ForceMode2D.Impulse);
-        ScreenShake(chargePower/ 10, chargePower/ 50);
-        
-        weapon.RailGunFire();
-        yield return new WaitForSeconds(0.5f);
-        isRailGunning = false;
+            weapon.RailGunFire();
+            yield return new WaitForSeconds(0.5f);
+            isRailGunning = false;
+        }
 
     }
     

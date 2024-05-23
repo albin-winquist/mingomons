@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using HealthBar;
+using Pathfinding;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -12,13 +13,15 @@ public class EnemyDestroy : MonoBehaviour
     float timer;
     private bool isDead = false;
     private ParticleSystem[] particleSystems;
-
+    GameObject player;
+    GameObject menu;
 
     void Start()
     {
+        player = GameObject.FindGameObjectWithTag("player");
         particleSystems = GetComponentsInChildren<ParticleSystem>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-
+        menu = GameObject.FindGameObjectWithTag("MenuTag");
     }
 
     // Update is called once per frame
@@ -33,12 +36,18 @@ public class EnemyDestroy : MonoBehaviour
             {
                 ps.Play();
             }
-
-
+            player.GetComponent<Movement>().ScreenShake(7, 7);
+            player.GetComponentInChildren<StaminaBar>().ManaCharge(1);
+            menu.GetComponent<ScoreChanger>().GetScore(1);
             spriteRenderer.enabled = false;
             GetComponentInChildren<BoxCollider2D>().enabled = false;
             GetComponentInChildren<PolygonCollider2D>().enabled = false;
-            
+            GetComponentInChildren<EnemyFlipGFX>().enabled = false;
+            GetComponentInChildren<Rigidbody2D>().simulated = false;
+            GetComponent<Seeker>().enabled = false;
+            Destroy(GetComponent<AIPath>());
+
+
 
         }
         if(health <= 0)

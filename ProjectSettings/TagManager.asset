@@ -23,6 +23,8 @@ TagManager:
   - trysmth
   - RailBulletTag
   - BloodTag
+  - MenuTag
+  - playerBlood
   layers:
   - Default
   - TransparentFX

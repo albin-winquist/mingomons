@@ -6,7 +6,7 @@ public class Weapon : MonoBehaviour
 {
     public Bullets weapon;
     public Rigidbody2D rb;
-   
+    GameObject menu;
     public Transform firePoint;
     public Rigidbody2D parentRB;
     Vector2 mousePosition;
@@ -20,6 +20,7 @@ public class Weapon : MonoBehaviour
     
     void Start()
     {
+        menu = GameObject.FindGameObjectWithTag("MenuTag");
         shotInMag = 12;
     }
 
@@ -27,8 +28,8 @@ public class Weapon : MonoBehaviour
     public void Update()
     {
 
-       
-       
+
+        menu.GetComponent<ScoreChanger>().GetAmmo(shotInMag);
         if (Input.GetMouseButtonDown(0)&& shotInMag >=1&& CanFire)
         {
             weapon.Fire(); 
