@@ -12,7 +12,9 @@ public class Bullet : MonoBehaviour
     SpriteRenderer spriteRenderer;
     Rigidbody2D rb;
     int numOfHit = 0;
-    
+
+    GameObject enemy;
+
     GameObject explosion;
     ParticleSystem particleAccelerator;
 
@@ -23,6 +25,7 @@ public class Bullet : MonoBehaviour
     private float timer = 0;
     public void Start()
     {
+        enemy = GameObject.FindGameObjectWithTag("EnemyTag");
         player = GameObject.FindGameObjectWithTag("player");
         explosion = GameObject.FindGameObjectWithTag("ExplosionTag");
         particleAccelerator = GetComponentInChildren<ParticleSystem>();
@@ -51,6 +54,11 @@ public class Bullet : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D trigger)   
     {
+        if(trigger.CompareTag("EnemyTag"))
+        {
+            enemy.GetComponent<EnemyHealth>().takeDamage(1);
+        }
+          
         GetComponent<Rigidbody2D>().simulated = false;
         GetComponent<CapsuleCollider2D>().enabled = false;
         if (particleAccelerator != null)

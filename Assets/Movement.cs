@@ -105,6 +105,7 @@ public class Movement : MonoBehaviour
     private WeaponParent weaponParent;
     CinemachineImpulseSource impulseSource;
     private StaminaBar staminaAccess;
+    private Healthbar healthBar;
     struct ChargeResult
     {
         public float power;
@@ -127,6 +128,7 @@ public class Movement : MonoBehaviour
         jumpPart = GameObject.FindGameObjectWithTag("JumpPTag");
         jumpSHOPTag = GameObject.FindGameObjectWithTag("JumpSHOPTag");
         staminaAccess = GetComponentInChildren<StaminaBar>();
+        healthBar = GetComponentInChildren<Healthbar>();
         LENS_SIZE = virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize;
         START_EM_SIZE = particleAccelerator.GetComponent<ParticleSystem>().startSize;
         START_EMISSION = particleAccelerator.GetComponent<ParticleSystem>().emissionRate;
@@ -139,7 +141,12 @@ public class Movement : MonoBehaviour
     
     void Update()
     {
-        
+        if(healthBar.Health <= 0)
+        {
+           Destroy(gameObject);
+        }
+
+
         
 
         if(stillCharging)
@@ -333,7 +340,7 @@ public class Movement : MonoBehaviour
             }
             chargeTimer = 0;
         }
-       
+        
 
         if(!isCharging && chargePower  <= 2.01f) 
         {
@@ -473,6 +480,8 @@ public class Movement : MonoBehaviour
         
 
     }
+
+    
     private ChargeResult Charge(bool isCharging, float power, bool stillCharging, float timer, string chargeType)
     {
 

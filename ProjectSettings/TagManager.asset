@@ -19,6 +19,8 @@ TagManager:
   - JumpPTag
   - JumpSHOPTag
   - WaveSpawner
+  - EnemyTag
+  - trysmth
   layers:
   - Default
   - TransparentFX
