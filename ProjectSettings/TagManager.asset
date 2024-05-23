@@ -21,6 +21,8 @@ TagManager:
   - WaveSpawner
   - EnemyTag
   - trysmth
+  - RailBulletTag
+  - BloodTag
   layers:
   - Default
   - TransparentFX

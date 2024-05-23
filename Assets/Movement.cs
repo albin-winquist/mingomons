@@ -27,7 +27,7 @@ public class Movement : MonoBehaviour
     public Transform firePoint;
     Transform playerTransform;
     public Transform eyePoint;
-    float minuesValue = 0.002f;
+    float minuesValue = 0.007f;
     bool preJumper = false;
     float subJumper = 1;
     Vector2 thing;
@@ -221,16 +221,13 @@ public class Movement : MonoBehaviour
             {
                 isHealthPower = false;
                 currentlyGunning = false;
-                stillCharging = true;
+                
                 if (healthPower > 20 && railGunTimer > RAILGUN_CD)
                 {
                     railGunTimer = 0;
                    
                 }
-                else if (healthPower < 20)
-                {
-                    stillCharging = false;
-                }
+                
             }
         }
 
@@ -295,9 +292,13 @@ public class Movement : MonoBehaviour
             ChargeResult result = Charge(isCharging, chargePower, stillCharging, railGunTimer, "railgun");
             chargePower = result.power;
 
-            if (isCharging || isHealthPower)
+            if (isCharging)
             {
-                speed = 0.5f;
+                speed = 2f;
+            }
+            else if(isHealthPower)
+            {
+                speed = 0.7f;
             }
             else
             {
@@ -356,9 +357,10 @@ public class Movement : MonoBehaviour
             chargeHealthBar.transform.localScale = new Vector3((healthPower * 10 - 2) / MAX_POWER * 2, chargeHealthBar.transform.localScale.y, chargeHealthBar.transform.localScale.z);
             if (isHealthPower && healthPower > 2)
             {
+                EffectsOnCharge(healthPower);
                 ScreenShake(healthPower / 100, healthPower / 100);
                 virtualCamera.GetComponent<CinemachineVirtualCamera>().Follow = playerTransform;
-                EffectsOnCharge(healthPower);
+                
                 
             }
             else
@@ -421,7 +423,7 @@ public class Movement : MonoBehaviour
             }
             else
             {
-                minuesValue = 0.002f;
+                minuesValue = 0.007f;
             }
             jumpPreTimer = 0;
         }
@@ -499,7 +501,7 @@ public class Movement : MonoBehaviour
         else if(chargeType == "health")
         {
             poweredByCharge = 1.001f;
-            powerSpeed = 0.05f;
+            powerSpeed = 0.1f;
             minusPower = this.minusPower;
         }
         else if (chargeType == "jump")
@@ -641,7 +643,7 @@ public class Movement : MonoBehaviour
     {
         preJumper = true;
         isJumping = true;
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(0.5f);
         jumpPart.GetComponent<ParticleSystem>().Play();
         subJumper = 1;
         preJumper = false;

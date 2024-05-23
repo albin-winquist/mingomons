@@ -11,7 +11,7 @@ public class EnemyHealth : MonoBehaviour
 {
     
     public float maxHealth = 3;
-    public float currHealth;
+    public float currHealth = 3;
     
     // Start is called before the first frame update
     void Start()
@@ -19,12 +19,6 @@ public class EnemyHealth : MonoBehaviour
        
         currHealth = UnityEngine.Random.Range(3, 8);
 
-      
-      
-
-        
-        
-        
     }
 
 
@@ -32,10 +26,7 @@ public class EnemyHealth : MonoBehaviour
     void Update()
     {
         
-        if (currHealth <= 0)
-        {
-            Destroy(gameObject);
-        }
+       
        
 
 
