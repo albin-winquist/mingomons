@@ -17,7 +17,7 @@ public class EnemyHealth : MonoBehaviour
     void Start()
     {
        
-        currHealth = UnityEngine.Random.Range(3, 8);
+        currHealth = UnityEngine.Random.Range(3, 6);
 
     }
 

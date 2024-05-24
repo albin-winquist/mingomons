@@ -23,7 +23,7 @@ public class Bullet : MonoBehaviour
     private float startSpeed;
     private float startSize;
     Vector3 dir;
-    float piercingPower = 15;
+    float piercingPower = 11;
     private float timer = 0;
 
     public void Start()
@@ -101,7 +101,7 @@ public class Bullet : MonoBehaviour
             }
             else
             {
-                piercingPower = 15;
+                piercingPower = 11;
                 GetComponent<Rigidbody2D>().simulated = false;
                 GetComponent<CapsuleCollider2D>().enabled = false;
                 spriteRenderer.enabled = false;

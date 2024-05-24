@@ -100,7 +100,7 @@ public class Movement : MonoBehaviour
 
     float jumpPreTimer = 0;
 
-    
+    bool jumpMAXED = false;
 
     float tapChargeTimer = 0f;
     bool isTapping = false;
@@ -248,18 +248,18 @@ public class Movement : MonoBehaviour
             currentlyGunning = false;
         }
 
-        if (Input.GetKeyDown(KeyCode.Space) && jumpPower <= 2 && !canJump && !currentlyGunning && staminaAccess.Stamina > 25)
+        if (Input.GetKeyDown(KeyCode.Space) && jumpPower <= 2 && !canJump && !currentlyGunning && staminaAccess.Stamina > 25 && !jumpMAXED)
         {
             StartCoroutine(preJump());
          
         }
-        if (Input.GetKeyUp(KeyCode.Space))
+        if (Input.GetKeyUp(KeyCode.Space) && !jumpMAXED)
         {
             jumpMaxed = jumpPower;
         }
         if (tapChargeTimer > 1)
         {
-           if (!Input.GetKey(KeyCode.Space))
+           if (!Input.GetKey(KeyCode.Space) && !jumpMAXED)
             {
                 isJumpPower = false;
                 stillCharging = true;
@@ -302,7 +302,7 @@ public class Movement : MonoBehaviour
             rb.velocity = movement * speed;
         }
 
-        Debug.Log(currentlyGunning);
+       
         if (chargeTimer >= .01f)
         {
 
@@ -371,6 +371,13 @@ public class Movement : MonoBehaviour
             cantRailGun = true;
             stillCharging = false;
            
+        }
+        if(jumpPower == MAX_POWER)
+        {
+            isJumpPower = false;
+            stillCharging = true;
+            jumpMAXED = true;
+
         }
        
 
@@ -469,7 +476,7 @@ public class Movement : MonoBehaviour
         {
             playerTransform.localScale = new Vector3(subJumper, subJumper, 1);
         }
-
+        Debug.Log(jumpMAXED + " " +  stillCharging);
        
 
         // Debug.Log(isHealthCharging + " <-H : R-> " + isRailGunCharging + "       :||:       " + healthPower + " <- HealthCharger : RailgunCharger -> " + chargePower + "         JumpPower -> " + jumpPower);
@@ -646,9 +653,10 @@ public class Movement : MonoBehaviour
                     setExplosionPower(yup/10);
 
                     JumpCollider();
+
                     tryde = false;
                     canJump = false;
-
+                    jumpMAXED = false;
                     //attack innan isjumoing
                     isJumping = false;
                 }
