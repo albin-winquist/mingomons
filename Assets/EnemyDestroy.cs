@@ -36,7 +36,7 @@ public class EnemyDestroy : MonoBehaviour
             {
                 ps.Play();
             }
-            player.GetComponent<Movement>().ScreenShake(7, 7);
+            player.GetComponent<Movement>().ScreenShake(4, 2);
             player.GetComponentInChildren<StaminaBar>().ManaCharge(1);
             menu.GetComponent<ScoreChanger>().GetScore(1);
             spriteRenderer.enabled = false;

@@ -226,6 +226,7 @@ public class Movement : MonoBehaviour
                 }
             }
         }
+
         if (!isJumpPower && !isCharging && !isJumping && staminaAccess.Stamina > 40)
         {
             if (Input.GetKeyDown(KeyCode.F))
@@ -405,7 +406,10 @@ public class Movement : MonoBehaviour
 
             canOnlyHappenOnce = true;
         }
-
+        if(staminaAccess.Stamina < 40)
+        {
+            isHealthPower = false;
+        }
 
 
         if (!isCharging && chargePower  <= 2.01f) 
@@ -624,9 +628,9 @@ public class Movement : MonoBehaviour
 
         foreach (Collider2D enemy in enemiesHit)
         {
-            if (enemy.gameObject.CompareTag("Enemy") && enemy.GetComponent<EnemyHealth>() != null)
+            if (enemy.gameObject.CompareTag("EnemyTag") && enemy.GetComponent<EnemyHealth>() != null)
             {
-                enemy.GetComponent<EnemyHealth>().takeDamage(5);
+                enemy.GetComponent<EnemyHealth>().takeDamage(4);
             }
                 
         }

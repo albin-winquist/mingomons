@@ -26,7 +26,7 @@ public class EnemyDamage : MonoBehaviour
     {
         if (trigger.CompareTag(damageTag) && playerFinder != null)
         { 
-            playerFinder.GetComponentInChildren<Healthbar>().TakeDamg(2);
+            playerFinder.GetComponentInChildren<Healthbar>().TakeDamg(5);
         }
     }
 }
