@@ -58,7 +58,7 @@ public class WaveSpawner : MonoBehaviour
         }
         else
         {
-            spawnTimer -= Time.fixedDeltaTime;
+             spawnTimer -= Time.fixedDeltaTime;
             waveTimer -= Time.fixedDeltaTime;
         }
 
@@ -71,11 +71,15 @@ public class WaveSpawner : MonoBehaviour
 
     public void GenerateWave()
     {
-        waveValue = currWave * 10;
+        waveValue = currWave * 4;
+        if(waveValue >= 25)
+        {
+            waveValue = 25;
+        }
         GenerateEnemies();
         if(enemiesToSpawn.Count != 0)
         {
-            spawnInterval = waveDuration / enemiesToSpawn.Count;
+            spawnInterval = waveDuration / 5;
         }
         
         waveTimer = waveDuration;
@@ -96,6 +100,7 @@ public class WaveSpawner : MonoBehaviour
         List<GameObject> generatedEnemies = new List<GameObject>();
         while (waveValue > 0 || generatedEnemies.Count < 50)
         {
+            
             int randEnemyId = Random.Range(0, enemies.Count);
             int randEnemyCost = enemies[randEnemyId].cost;
 
