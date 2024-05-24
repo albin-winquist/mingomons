@@ -19,6 +19,8 @@ public class Movement : MonoBehaviour
     float START_EM_SPEED;
     float START_EM_SIZE;
 
+    bool canOnlyHappenOnce = false;
+
     [SerializeField] GameObject attackPoint;
     float attackRange = 0.5f;
     [SerializeField] float speed = 5;
@@ -104,6 +106,10 @@ public class Movement : MonoBehaviour
 
     float tapChargeTimer = 0f;
     bool isTapping = false;
+
+
+    bool maxJump = false; 
+
 
     float dampeningRate = 0.1f;
 
@@ -259,10 +265,13 @@ public class Movement : MonoBehaviour
         }
         if (tapChargeTimer > 1)
         {
-           if (!Input.GetKey(KeyCode.Space) && !jumpMAXED)
+           if (!Input.GetKey(KeyCode.Space))
             {
                 isJumpPower = false;
-                stillCharging = true;
+                if (!maxJump)
+                {
+                    stillCharging = true;
+                }
                 
                 if (railGunTimer > RAILGUN_CD)
                 {
@@ -272,6 +281,10 @@ public class Movement : MonoBehaviour
                 isTapping = false;
                 tapChargeTimer = 0;
             }
+        }
+        if(Input.GetKeyUp(KeyCode.Space))
+        {
+            maxJump = false;
         }
 
         if (stillCharging)
@@ -374,12 +387,25 @@ public class Movement : MonoBehaviour
         }
         if(jumpPower == MAX_POWER)
         {
+            
             isJumpPower = false;
             stillCharging = true;
-            jumpMAXED = true;
+            
+            maxJump = true;
+
 
         }
-       
+        if (staminaAccess.Stamina < 1 && isJumping && jumpPower > 2 && !canOnlyHappenOnce) 
+        {
+            
+            isJumpPower = false;
+            stillCharging = true;
+
+            maxJump = true;
+
+            canOnlyHappenOnce = true;
+        }
+
 
 
         if (!isCharging && chargePower  <= 2.01f) 
@@ -476,7 +502,7 @@ public class Movement : MonoBehaviour
         {
             playerTransform.localScale = new Vector3(subJumper, subJumper, 1);
         }
-        Debug.Log(jumpMAXED + " " +  stillCharging);
+        
        
 
         // Debug.Log(isHealthCharging + " <-H : R-> " + isRailGunCharging + "       :||:       " + healthPower + " <- HealthCharger : RailgunCharger -> " + chargePower + "         JumpPower -> " + jumpPower);
@@ -620,6 +646,7 @@ public class Movement : MonoBehaviour
            
             result.power = System.MathF.Pow(result.power, poweredByCharge - 0.0055f);
             result.power = result.power + powerSpeed;
+            staminaAccess.SpendStamina(0.3f, 0f);
             if (result.power > MAX_POWER)
             {
                 result.power = MAX_POWER;
@@ -659,6 +686,7 @@ public class Movement : MonoBehaviour
                     jumpMAXED = false;
                     //attack innan isjumoing
                     isJumping = false;
+                    canOnlyHappenOnce = false;
                 }
 
                 result.power = result.power - minusPower;
@@ -685,7 +713,7 @@ public class Movement : MonoBehaviour
         preJumper = true;
         isJumping = true;
         yield return new WaitForSeconds(0.5f);
-        staminaAccess.SpendStamina(25f, 0f);
+        staminaAccess.SpendStamina(5f, 0f);
         jumpPart.GetComponent<ParticleSystem>().Play();
         subJumper = 1;
         preJumper = false;

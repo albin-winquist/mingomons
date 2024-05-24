@@ -64,7 +64,10 @@ public class StaminaBar : MonoBehaviour
                 timer = 0;
             }
         }
-        minusVal = (float)starter / 100;
+        if (Stamina <= 0)
+        {
+            Stamina = 0;
+        }
 
         if (Input.GetKeyDown(KeyCode.LeftShift) && Stamina >= 25)
         {
